@@ -5,8 +5,22 @@ name = "pypi"
 
 [packages]
 numpy = "*"
+<<<<<<< HEAD
+=======
+pandas = "*"
+seaborn = "*"
+matplotlib = "*"
+openpyxl = "*"
+ipykernel = "*"
+plotly = "*"
+plotly-express = "*"
+>>>>>>> 8fcb954cd2a3b7affd3df4c4d5ae13c722951bfc
 
 [dev-packages]
 
 [requires]
+<<<<<<< HEAD
 python_version = "3.9"
+=======
+python_version = "3.8"
+>>>>>>> 8fcb954cd2a3b7affd3df4c4d5ae13c722951bfc
