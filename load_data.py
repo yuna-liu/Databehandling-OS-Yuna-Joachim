@@ -12,7 +12,7 @@ from datetime import datetime
 
 
 class ShowMeData:
-    """The CovidData class is used for the intention to parse data, check missing data, clean missing data, and then export cleaned data"""
+    """The class is used for the intention to parse data, check missing data, clean missing data, and then export cleaned data"""
     def __init__(self, name, import_path="data/", export_path="data_clean/", sheet_name = None):
         self.name = name
         self.sheetname = sheet_name
