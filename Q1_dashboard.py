@@ -43,10 +43,9 @@ app.layout = html.Div([
               
 def update_graph(medal):
     
-    fig = px.line(df_medal, x="Year", y=medal, title=f"The number of {medal}s from Athens 1896 to Rio 2016")
+    fig = px.bar(df_medal, x="Year", y=medal, title=f"The number of {medal}s from Athens 1896 to Rio 2016")
     
     return fig
-    
 
 if __name__ == '__main__':
     app.run_server(debug= True)
