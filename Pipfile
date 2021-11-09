@@ -12,6 +12,7 @@ openpyxl = "*"
 ipykernel = "*"
 plotly = "*"
 plotly-express = "*"
+dash = "*"
 
 [dev-packages]
 
