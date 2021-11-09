@@ -4,93 +4,49 @@ import dash
 from load_data import ShowMeData
 from dash.dependencies import Output, Input
 import plotly_express as px
+import plotly.graph_objects as go
 from time_filtering import filter_time
 
-list_canada = []
-canada = pd.read_csv("data/canada.csv", index_col = 0, parse_dates = True)
-canada.reset_index(drop=True)
-list_canada.append(canada)
-list_canada
+# 1. Import data
+df = pd.read_csv("data/canada.csv")
+df_canada = pd.DataFrame(df.groupby(["Year", "Medal"]).count()["ID"]).reset_index()
 
-"""
-This app creates a simple sidebar layout using inline style arguments and the
-dbc.Nav component.
+# use df.pivot() for long-to-wide
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.pivot.html#pandas.DataFrame.pivot
+df_medal = df_canada.pivot(index="Year", columns="Medal", values="ID")
+df_medal.fillna(0, inplace=True)
+df_medal.reset_index(drop=False, inplace=True )
+df_medal["Total"] = df_medal["Bronze"] + df_medal["Gold"] + df_medal["Silver"]
+df_medal = df_medal.astype("int32")
+df_medal.head(10)
 
-dcc.Location is used to track the current location, and a callback uses the
-current location to render the appropriate page content. The active prop of
-each NavLink is set automatically according to the current pathname. To use
-this feature you must install dash-bootstrap-components >= 0.11.0.
+# Initiate dashboard
 
-For more details on building multi-page Dash applications, check out the Dash
-documentation: https://dash.plot.ly/urls
-"""
-import dash
-import dash_bootstrap_components as dbc
-from dash import Input, Output, dcc, html
+medal_options_dropdown = [{'label': medal, 'value': medal}
+                          for medal in list(df_canada["Medal"].unique())]
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__)
 
-# the style arguments for the sidebar. We use position:fixed and a fixed width
-SIDEBAR_STYLE = {
-    "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "16rem",
-    "padding": "2rem 1rem",
-    "background-color": "#f8f9fa",
-}
-
-# the styles for the main content position it to the right of the sidebar and
-# add some padding.
-CONTENT_STYLE = {
-    "margin-left": "18rem",
-    "margin-right": "2rem",
-    "padding": "2rem 1rem",
-}
-
-sidebar = html.Div(
-    [
-        html.H2("Canada"plot, className="display-4"),
-        html.Hr(),
-        html.P(
-            "Olympic games from 1896 to 2016", className="lead"
-        ),
-        dbc.Nav(
-            [
-                dbc.NavLink("Home", href="/", active="exact"),
-                dbc.NavLink("Page 1", href="/page-1", active="exact"),
-                dbc.NavLink("Page 2", href="/page-2", active="exact"),
-            ],
-            vertical=True,
-            pills=True,
-        ),
-    ],
-    style=SIDEBAR_STYLE,
-)
-
-content = html.Div(id="page-content", style=CONTENT_STYLE)
-
-app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
+app.layout = html.Div([
+    html.H1('Canada in 120 years of Olympic history: athletes and results'),
+    html.H2('Choose a medal:'),
+    dcc.Dropdown(id='medal-picker-dropdown', className='',
+                 value="Gold",
+                 options=medal_options_dropdown),
+    dcc.Graph(id='medals-graph', className=''),
+])
 
 
-@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
-def render_page_content(pathname):
-    if pathname == "/":
-        return html.P("This is the content of the home page!")
-    elif pathname == "/page-1":
-        return html.P("This is the content of page 1. Yay!")
-    elif pathname == "/page-2":
-        return html.P("Oh cool, this is page 2!")
-    # If the user tries to reach a different page, return a 404 message
-    return dbc.Jumbotron(
-        [
-            html.H1("404: Not found", className="text-danger"),
-            html.Hr(),
-            html.P(f"The pathname {pathname} was not recognised..."),
-        ]
-    )
+@app.callback(Output("medals-graph", "figure"),
+              Input("medal-picker-dropdown", "value")
+              )
+              
+def update_graph(medal):
+    
+    fig = px.line(df_medal, x="Year", y=medal, title=f"The number of {medal}s from Athens 1896 to Rio 2016")
+    
+    return fig
+    
 
-
-if __name__ == "__main__":
-    app.run_server(port=8888)
+if __name__ == '__main__':
+    app.run_server(debug= True)
