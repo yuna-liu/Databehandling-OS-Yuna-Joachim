@@ -13,6 +13,7 @@ ipykernel = "*"
 plotly = "*"
 plotly-express = "*"
 dash = "*"
+dash-bootstrap-components = "*"
 
 [dev-packages]
 
