@@ -23,7 +23,7 @@ df_medal.head(10)
 # Initiate dashboard
 
 medal_options_dropdown = [{'label': medal, 'value': medal}
-                          for medal in list(df_canada["Medal"].unique())]
+                          for medal in "Bronze Gold Silver Total".split()]
 
 app = dash.Dash(__name__)
 
@@ -31,7 +31,7 @@ app.layout = html.Div([
     html.H1('Canada in 120 years of Olympic history: athletes and results'),
     html.H2('Choose a medal:'),
     dcc.Dropdown(id='medal-picker-dropdown', className='',
-                 value="Gold",
+                 value="Total",
                  options=medal_options_dropdown),
     dcc.Graph(id='medals-graph', className=''),
 ])
