@@ -14,6 +14,7 @@ plotly = "*"
 plotly-express = "*"
 dash = "*"
 dash-bootstrap-components = "*"
+datetime = "*"
 
 [dev-packages]
 
