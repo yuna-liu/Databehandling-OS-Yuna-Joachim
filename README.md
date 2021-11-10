@@ -14,3 +14,11 @@ Dashboard-idéer:
 - En plot med något annat, som åldersfördelning, sporter etc på x-axeln
 
 - En ruta som visar lite olika siffror, max-min-värden(?), antal medaljer av olika slag
+
+TODO:
+
+- Lägga in tids-linje-plot-koderna till Dashboarden
+
+- Lägga in övriga figurer i dashboard också (icke tidsberoende)
+
+- Kod för att extrahera intressanta siffror, antal medaljer av olika slag för det man har valt (år, sport, säsong)
