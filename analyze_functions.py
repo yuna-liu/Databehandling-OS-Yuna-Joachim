@@ -12,27 +12,32 @@ def count_medals(df_orig, column_name):
 
     Input:
         df_orig: DataFrame
-        column_name: column to get top values of
+        column_name: column to get number of medals of each
     
     Returns:
         df_best: new DataFrame
     """
     
-    # Remove all rows with NaNs (no medals are NaN)
-    df_best = df_orig.dropna(axis="rows")
-
-    # Adds a counter-column for number of medals
-    df_best["Number medals"] = 1
-
-    # Groupby chosen column_name
-    # Count number of medals and sort by number of medals
-    df_best = df_best.groupby(column_name).sum().sort_values("Number medals", ascending=False)
-    
-    # Remove redundant columns
-    df_best = df_best.drop(
-        [column for column in df_best.columns if column != "Number medals"],
+    # Remove redundant columns first
+    df_medals = df_orig.drop(
+        [column for column in df_orig.columns if (column != "Medal") and (column != column_name)],
         axis="columns"
     )
 
+    # Remove all NaN (no medal won == NaN)
+    df_medals = df_medals.dropna(axis="rows")
+
+    # Add a counter-columns for number of ALL medals
+    df_medals["Number medals"] = 1
+
+    # Add counters of Gold, silver, and bronze medals
+    for medal in df_medals["Medal"].unique():
+        df_medals[f"Number {medal}"] = 0
+        df_medals[f"Number {medal}"].loc[df_medals["Medal"] == medal] = 1
+
+    # Groupby chosen column_name and count all number of medals
+    df_medals = df_medals.groupby(column_name).sum()
+
     # Give back new dataframe
-    return df_best
+    return df_medals
+
