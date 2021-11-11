@@ -23,7 +23,7 @@ def count_medals_n(df_orig, *arg):
     args_list = list(arg)
     args_list.append("Medal")
     df_medals = df_medals.groupby(args_list).count().reset_index()
-  
+
     # "ID" column stands for the sum of medals
     args_list.append("ID")
     df_medals = df_medals.loc[:, args_list]
@@ -38,8 +38,8 @@ def count_medals_n(df_orig, *arg):
     # generate Total, avoid using for-loop in pandas dataframe
     df_medals["Total"] = df_medals["Gold"] + df_medals["Silver"] + df_medals["Bronze"]
     
-    # change type
-    df_medals = df_medals.astype(int)
+    # change type and change indeces to columns
+    df_medals = df_medals.astype(int).reset_index(inplace=False)
 
     # Give back new dataframe
     return df_medals
