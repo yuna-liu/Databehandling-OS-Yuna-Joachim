@@ -16,6 +16,7 @@ dash = "*"
 dash-bootstrap-components = "*"
 datetime = "*"
 nbformat = "*"
+numexpr = "*"
 
 [dev-packages]
 
