@@ -14,12 +14,6 @@ import analyze_functions as af
 df = pd.read_csv("data/canada.csv")
 
 
-
-# TODO: 
-# Slider options are to be the the range of values in the column the user choses
-
-
-
 # Dropdown options
 # Medal dropdwon
 medal_options_dropdown = [
@@ -28,9 +22,10 @@ medal_options_dropdown = [
 ]
 
 # Attribute dropdown
+attr_list = ['Sex', 'Age', 'Year', 'Season', 'City', 'Sport', 'Event']
 attribute_options_dropdown = [
     {'label':attribute, 'value': attribute} 
-    for attribute in df.columns[4:16]
+    for attribute in attr_list
 ]
 
 # Set initial settings
@@ -71,7 +66,7 @@ app.layout = html.Div([
     ),
 
     dcc.RangeSlider(
-        id='x-slider', 
+        id='time-slider', 
         className='',
         min = df_medal[df_medal.columns[0]].min(), 
         max = df_medal[df_medal.columns[0]].max(), 
@@ -83,13 +78,28 @@ app.layout = html.Div([
         ],
         marks = slider_marks
     ),
+
+    # TODO textbox with number of medals shown
+    #    dbc.Col([
+    #        dbc.Card([
+    #            html.H2("Highest value", className='h5 mt-3 mx-3'),
+    #            html.P(id = "highest-value", className='mx-3 h1 text-success')
+    #        ], className='mt-5 w-50'),
+    #        dbc.Card([
+    #            html.H2("Lowest value", className='h5 mt-3 mx-3'),
+    #            html.P(id = "lowest-value", className='mx-3 h1 text-danger'),
+    #            ], className='w-50')
+
+
+    html.H2("International statistics")
+    # TODO figures with international, Q2 results
 ])
 
 @app.callback(
     Output("medals-graph", "figure"),
     Input("medal-picker-dropdown", "value"),
     Input("attribute-dropdown", "value"),
-    Input("x-slider", "value")
+    Input("time-slider", "value")
 )
 def update_graph(medal,chosen_attribute ,x_index):
     # time_index is a list of two points choosen by user
@@ -116,7 +126,6 @@ def update_graph(medal,chosen_attribute ,x_index):
         dff, x="Year", y=medal, color=chosen_attribute,
         title=f"The number of {medal}s from {x_index[0]} to {x_index[1]}"
     )
-    fig.update_layout(barmode="group")
 
     for data in fig.data:
         data["width"]= 0.5
