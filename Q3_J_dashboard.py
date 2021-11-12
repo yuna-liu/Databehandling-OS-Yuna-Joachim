@@ -71,28 +71,33 @@ app.layout = dbc.Container([
 
         #  1st col: with medal picker and with numbers to the right
         dbc.Col([
-            html.H3('Choose a medal:', className='mt-4'),
-            dcc.RadioItems(
-                id='medal-picker-radio', 
-                className='',
-                value="Total",
-                options=medal_options,
-                labelStyle={'display': 'block'}
-            ),
+            dbc.Card([
+                html.H3('Choose a medal:', className='m-2'),
+                dcc.RadioItems(
+                    id='medal-picker-radio', 
+                    className='m-2',
+                    value="Total",
+                    options=medal_options,
+                    labelStyle={'display': 'block'}
+                )
+            ]),
             dbc.Card([
                 dbc.Row([
-                    html.H3("Number of medals shown."),
+                    html.H3(
+                        "Number of medals shown.",
+                        className='m-2'
+                    ),
                     dbc.Col([
-                        html.P("Total:"),
-                        html.P("Gold:"),
-                        html.P("Silver:"),
-                        html.P("Bronze:"),
+                        html.P("Total:", className='m-2'),
+                        html.P("Gold:", className='m-2'),
+                        html.P("Silver:", className='m-2'),
+                        html.P("Bronze:", className='m-2'),
                     ]),
                     dbc.Col([
-                        html.P(id='total-medals'),
-                        html.P(id='gold-medals'),
-                        html.P(id='silver-medals'),
-                        html.P(id='bronze-medals'),
+                        html.P(id='total-medals', className='m-2'),
+                        html.P(id='gold-medals', className='m-2'),
+                        html.P(id='silver-medals', className='m-2'),
+                        html.P(id='bronze-medals', className='m-2'),
                     ])
                 ])
             ], className='mt-1')
@@ -123,18 +128,18 @@ app.layout = dbc.Container([
     # 2nd Title, for second figure
     dbc.Card([
         dbc.CardBody(html.H1("Top (10) - statistics for Canada",
-            className='text-primary-m-3'
+            className='text-primary-m-4'
         ))
-    ], className='mt-3'),
+    ], className='mt-5'),
 
     # 2 columns
     dbc.Row([
         # 1st with dropdown menu
         dbc.Col([
-            html.H3('Choose statistic'),
+            html.H3('Choose a statistic', className = 'm-2'),
             dcc.Dropdown(
                 id = 'attribute-dropdown',
-                className = '',
+                className = 'm-2',
                 value = "Sport",
                 options = attribute_options_dropdown
             ),
