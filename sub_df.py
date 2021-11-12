@@ -5,7 +5,7 @@ import pandas as pd
 
 
 # count medals fct with arbitrary number of arguments
-def count_medals_n(df_orig, *arg):
+def count_medals(df_orig, *arg):
     """
     Gives back number of medals groupby several attributes: *arg
 

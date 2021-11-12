@@ -17,6 +17,7 @@ dash-bootstrap-components = "*"
 datetime = "*"
 nbformat = "*"
 numexpr = "*"
+lxml = "*"
 
 [dev-packages]
 
