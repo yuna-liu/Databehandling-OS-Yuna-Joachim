@@ -7,6 +7,7 @@ from dash.dependencies import Output, Input
 import plotly_express as px
 import plotly.graph_objects as go
 from time_filtering import filter_time
+import dash_bootstrap_components as dbc
 
 import analyze_functions as af
 import sub_df as af2
@@ -44,52 +45,76 @@ slider_marks = {
     )
 }
 
-# Initiate dashboard
-app = dash.Dash(__name__)
+stylesheets = [dbc.themes.MATERIA]
+# creates a Dash App
+app = dash.Dash(__name__, external_stylesheets=stylesheets,
+                meta_tags=[dict(name="viewport", content="width=device-width, initial-scale=1.0")])
 
-app.layout = html.Div([
-    html.H1('Global countries in 120 years of Olympic history: athletes and results'),
+server = app.server  # needed for Heroku to connect to
 
-    html.P('Choose a attribute:'),    
-    dcc.Dropdown(
-        id='attribute-dropdown', 
-        className='',
-        value="Sex",
-        options=attribute_options_dropdown
-    ),
-    html.P(id="total-medal"),
-    html.P(id="gold-medal"),
-    html.P(id="silver-medal"),
-    html.P(id="bronze-medal"),
-    dcc.RadioItems(id="medal-radio", className='',
-                   options= medal_options,
-                   value="Total"
-                   ),
-    
-    dcc.Graph(
-        id='medals-graph', 
-        className=''
-    ),
+app.layout = dbc.Container([
+    dbc.Card([
+        dbc.CardBody([
+            html.H1('Global countries in 120 years of Olympic history: athletes and results',
+                    className='card-title text-dark mx-3')
+        ])
+    ], className="mt-4"),
 
-    #dcc.RangeSlider(
-        #id='time-slider', 
-        #className='',
-        #min = df_iso[df_iso.columns[1]].min(), 
-        #max = df_iso[df_iso.columns[1]].max(), 
-        #step = 2,
-        #dots=True, 
-        #value=[
-            #df_iso[df_iso.columns[1]].min(), 
-            #df_iso[df_iso.columns[1]].max()
-        #],
-        #marks = slider_marks
-    #),
-        # stores an intermediate value on clients browser for sharing between callbacks
-    dcc.Store(id="filtered-df")
-])
+    dbc.Row(className='mt-4', children=[
+        dbc.Col(
+            # responsivity
+            html.P("Choose an attribute:"), xs="12", sm="12", md="6", lg="4", xl={"size": 1, "offset": 2},
+            className="mt-1"
+        ),
+        dbc.Col(
+            dcc.Dropdown(id='attribute-dropdown', className='',
+                         options=attribute_options_dropdown,
+                         value='Sex',
+                         placeholder='Apple'), xs="12", sm="12", md="12", lg="4", xl="3"),
 
+        dbc.Col([
+            dbc.Card([
+                dcc.RadioItems(id='medal-radio', className="m-1",
+                                  options=medal_options,
+                                  value='Total'
+                               ),
+            ])
+        ], xs="12", sm="12", md="12", lg='4', xl="3"),
+    ]),
 
-    # TODO add this dashboard to the main dashboard
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(id="medals-graph"),
+            
+        ], lg={"size": "6", "offset": 1}, xl={"size": "6", "offset": 1}),
+
+        # dbc.Col([
+        #     dbc.Row(
+        #         dbc.Card([
+        #             html.H2("Highest value", className="h5 mt-3 mx-3"),
+        #             html.P(id="highest-value", className="text-success h1 mx-2")
+        #         ]), className="mt-5 h-25"
+        #     ),
+        #     dbc.Row(
+        #         dbc.Card([
+        #             html.H2("Lowest value", className="h5 mt-3 mx-3"),
+        #             html.P(id="lowest-value", className="text-danger h1 mx-2")
+        #         ]),
+        #         className="mt-5 h-25"
+        #     ),
+        # ], sm="5", md="3", lg="3", xl="2", className="mt-5 mx-5"),
+
+        html.Footer([
+            html.H3("120 years of Olympic games", className="h6"),
+            html.P("Dashboard av Yuna och Joachim")],
+            className="navbar fixed-bottom")
+
+    ]),
+    # stores an intermediate value on the clients browser for sharing between callbacks
+    dcc.Store(id="filtered-df"),
+
+], fluid=True)
+
 
 @app.callback(
     Output("medals-graph", "figure"),
@@ -98,43 +123,17 @@ app.layout = html.Div([
     Input("medal-radio", "value"),
     #Input("time-slider", "value")
 )
+
+
 #def update_graph(json_df, chosen_attribute, medal, x_index):
 def update_graph(json_df, chosen_attribute, medal):
-    # time_index is a list of two points choosen by user
-    # the left point refers to time_index[0]
-    # the right point refers to time_index[1]
-    # choose accordingly a subset of dataframe
-    # This is inspired by "Create Dashboard in Plotly Dash with dependent drop down list (chained callbacks) and range slider":
-    # https://www.youtube.com/watch?v=TsYwhX0hEA8&t=244s
-
-    # Update df_medal after what is chosen
-    #if chosen_attribute != "Year":
-        #df_medal = af.count_medals_n(df, "Year", chosen_attribute)
-    #else:
-        #df_medal = af.count_medals_n(df, "Year")
-
-    # Set time range
-    #dff = df_iso[
-        #(df_iso[df_iso.columns[1]] >= x_index[0]) & 
-        #(df_iso[df_iso.columns[1]] <= x_index[1])
-    #]
-    
-    # Update figure
-    #fig = px.bar(
-        #dff, x="Year", y=medal, color=chosen_attribute,
-        #title=f"The number of {medal}s from {x_index[0]} to {x_index[1]}"
-    #)
-
-    #for data in fig.data:
-        #data["width"]= 0.5
-
     fig = px.choropleth(df_iso, locations="ISO",
                         color=medal,
                         scope=None,
                         hover_name="Country",
                         animation_frame="Year",
                         title = f"Geographic map on {medal} medals in the 120 Olympics history", 
-                        range_color=[0,df_iso[medal].quantile(0.8)],
+                        range_color=[0,df_iso[medal].quantile(0.9)],
                         color_continuous_scale=px.colors.sequential.Plasma)
     
     
