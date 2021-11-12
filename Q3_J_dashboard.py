@@ -79,6 +79,8 @@ app.layout = html.Div([
         marks = slider_marks
     ),
 
+    # TODO figure with top ten best whatever!
+
     # TODO textbox with number of medals shown
     #    dbc.Col([
     #        dbc.Card([
