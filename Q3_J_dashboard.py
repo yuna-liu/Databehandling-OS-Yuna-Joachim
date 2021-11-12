@@ -1,16 +1,14 @@
 import pandas as pd
 
-#import numpy as np
-#from load_data import ShowMeData
-#import plotly.graph_objects as go
-
 import dash
 from dash import dcc, html
 from dash.dependencies import Output, Input
+import dash_bootstrap_components as dbc
 
 import plotly_express as px
 
 import analyze_functions as af
+
 
 # Import data
 df = pd.read_csv("data/canada.csv")
@@ -21,10 +19,19 @@ medal_list = "Gold Silver Bronze Total".split()
 medal_options = [{'label': medal, 'value': medal} for medal in medal_list]
 
 # Attribute dropdown options
-attr_list = ['Name', 'Sport', 'Games', 'Season', 'City', 'Event', 'Sex', 'Age']
+attr_dict = {
+    'Sport':'Sport', 
+    'Event':'Sport event', 
+    'Games':'Year & Season',
+    'Season':'Season', 
+    'Name':'Athlete', 
+    'Sex':'Athlete genders', 
+    'Age':'Athlete ages',
+    'City':'City'
+}
 attribute_options_dropdown = [
-    {'label':attribute, 'value': attribute} 
-    for attribute in attr_list
+    {'label':name, 'value': attribute} 
+    for attribute, name in attr_dict.items()
 ]
 
 # Time slider options 
@@ -37,83 +44,114 @@ slider_marks = {
 # Set initial settings for figure1, time-figure
 df_medal = af.count_medals_n(df, "Year")
 
-# Initiate dashboard
-app = dash.Dash(__name__)
 
-app.layout = html.Div([
-    html.H1('Canada in 120 years of Olympic history: athletes and results'),
+# Set theme settings
+stylesheets = [dbc.themes.JOURNAL]
+
+# Initiate dashboard
+#app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=stylesheets,
+    meta_tags=[dict(name="viewport", content="width=device-width, initial-scale=1.0")]
+)
+
+
+app.layout = dbc.Container([
+
+    # Main Title
+    dbc.Card([
+        dbc.CardBody(html.H1(
+            'Canada in 120 years of Olympic history: athletes and results',
+            className='text-primary-m-3'
+        ))
+    ], className='mt-3'),
 
     # Figure for medals per year
-    html.H2('Choose a medal:'),
-    dcc.RadioItems(
-        id='medal-picker-radio', 
-        className='',
-        value="Total",
-        options=medal_options
-    ),
+    # 2 columns,
+    dbc.Row([
 
-    dcc.Graph(
-        id='medals-graph', 
-        className=''
-    ),
-    dcc.RangeSlider(
-        id='time-slider', 
-        className='',
-        min = df_medal[df_medal.columns[0]].min(), 
-        max = df_medal[df_medal.columns[0]].max(), 
-        step = 2,
-        dots=True, 
-        value=[
-            df_medal[df_medal.columns[0]].min(), 
-            df_medal[df_medal.columns[0]].max()
-        ],
-        marks = slider_marks
-    ),
+        #  1st col: with medal picker and with numbers to the right
+        dbc.Col([
+            html.H3('Choose a medal:', className='mt-4'),
+            dcc.RadioItems(
+                id='medal-picker-radio', 
+                className='',
+                value="Total",
+                options=medal_options,
+                labelStyle={'display': 'block'}
+            ),
+            dbc.Card([
+                dbc.Row([
+                    html.H3("Number of medals shown."),
+                    dbc.Col([
+                        html.P("Total:"),
+                        html.P("Gold:"),
+                        html.P("Silver:"),
+                        html.P("Bronze:"),
+                    ]),
+                    dbc.Col([
+                        html.P(id='total-medals'),
+                        html.P(id='gold-medals'),
+                        html.P(id='silver-medals'),
+                        html.P(id='bronze-medals'),
+                    ])
+                ])
+            ], className='mt-1')
+        ], lg='8', xl='2'),
 
-    # Box showing total number of medals shown
-    html.H3("Number of medals shown, gold, silver, bronze"),
-    html.P(
-        id='total-medals'
-    ),
-    html.P(
-        id='gold-medals'
-    ),
-    html.P(
-        id='silver-medals'
-    ),
-    html.P(
-        id='bronze-medals'
-    ),
+        #  2nd col: with figure
+        dbc.Col([
+            dcc.Graph(
+                id='medals-graph', 
+                className=''
+            ),
+            dcc.RangeSlider(
+                id='time-slider', 
+                className='',
+                min = df_medal[df_medal.columns[0]].min(), 
+                max = df_medal[df_medal.columns[0]].max(), 
+                step = 2,
+                dots=True, 
+                value=[
+                    df_medal[df_medal.columns[0]].min(), 
+                    df_medal[df_medal.columns[0]].max()
+                ],
+                marks = slider_marks
+            ),
+        ]),
+    ], className='mt-4'),
 
-    html.H1("Top 10 - statistics for Canada"),
-    html.H2('Choose statistic'),
-    dcc.Dropdown(
-        id = 'attribute-dropdown',
-        className = '',
-        value = "Sport",
-        options = attribute_options_dropdown
-    ),
+    # 2nd Title, for second figure
+    dbc.Card([
+        dbc.CardBody(html.H1("Top (10) - statistics for Canada",
+            className='text-primary-m-3'
+        ))
+    ], className='mt-3'),
 
-    dcc.Graph(
-        id='top10-graph',
-        className=''
-    ),
-    # TODO figure with top ten best whatever!
+    # 2 columns
+    dbc.Row([
+        # 1st with dropdown menu
+        dbc.Col([
+            html.H3('Choose statistic'),
+            dcc.Dropdown(
+                id = 'attribute-dropdown',
+                className = '',
+                value = "Sport",
+                options = attribute_options_dropdown
+            ),
+        ], lg='8', xl='2'),
+        # 2nd with figure
+        dbc.Col([
+            dcc.Graph(
+                id='top10-graph',
+                className=''
+            ),
+        ])
+    ], className='mt-4'),
 
-    # TODO textbox with number of medals shown
-    #    dbc.Col([
-    #        dbc.Card([
-    #            html.H2("Highest value", className='h5 mt-3 mx-3'),
-    #            html.P(id = "highest-value", className='mx-3 h1 text-success')
-    #        ], className='mt-5 w-50'),
-    #        dbc.Card([
-    #            html.H2("Lowest value", className='h5 mt-3 mx-3'),
-    #            html.P(id = "lowest-value", className='mx-3 h1 text-danger'),
-    #            ], className='w-50')
 
+    # TODO? figure with whatever versus whatever?
+    # Could be interesting actually, like number of athletes per year, etc
 
-    #html.H2("International statistics")
-    # TODO figures with international, Q2 results - Yuna does this
 ])
 
 @app.callback(
@@ -184,10 +222,10 @@ def update_graph(chosen_attribute):
     # Update figure
     fig = px.bar(
         df_top, x=chosen_attribute, y=medal_list,
-        title=f"Canada, top 10 {chosen_attribute}",
+        title=f"Canada, top {attr_dict[chosen_attribute]}",
         labels={"value":"Number medals", "variable":"Medal"}
     )
-    fig.update_layout(barmode='group')
+    fig.update_layout(barmode='group', xaxis_tickangle=45)
 
     return fig
 
