@@ -1,12 +1,14 @@
 import pandas as pd
-import numpy as np
-from dash import dcc, html
+
+#import numpy as np
+#from load_data import ShowMeData
+#import plotly.graph_objects as go
+
 import dash
-from load_data import ShowMeData
+from dash import dcc, html
 from dash.dependencies import Output, Input
+
 import plotly_express as px
-import plotly.graph_objects as go
-from time_filtering import filter_time
 
 import analyze_functions as af
 
@@ -14,27 +16,26 @@ import analyze_functions as af
 df = pd.read_csv("data/canada.csv")
 
 
-# Dropdown options
-# Medal dropdwon
+# Medal options
 medal_list = "Gold Silver Bronze Total".split()
-medal_options_dropdown = [{'label': medal, 'value': medal} for medal in medal_list]
+medal_options = [{'label': medal, 'value': medal} for medal in medal_list]
 
-# Attribute dropdown
+# Attribute dropdown options
 attr_list = ['Name', 'Sport', 'Games', 'Season', 'City', 'Event', 'Sex', 'Age']
 attribute_options_dropdown = [
     {'label':attribute, 'value': attribute} 
     for attribute in attr_list
 ]
 
-# Set initial settings for figure1, time-figure
-# Data
-df_medal = af.count_medals_n(df, "Year")
-# Slider options 
+# Time slider options 
 slider_marks = {
     str(year): str(year) for year in range(
-        df["Year"].min(), df["Year"].max(), 2
+        df["Year"].min(), df["Year"].max(), 10
     )
 }
+
+# Set initial settings for figure1, time-figure
+df_medal = af.count_medals_n(df, "Year")
 
 # Initiate dashboard
 app = dash.Dash(__name__)
@@ -42,12 +43,13 @@ app = dash.Dash(__name__)
 app.layout = html.Div([
     html.H1('Canada in 120 years of Olympic history: athletes and results'),
 
-    html.H2('Choose a medal:'),    
-    dcc.Dropdown(
-        id='medal-picker-dropdown', 
+    # Figure for medals per year
+    html.H2('Choose a medal:'),
+    dcc.RadioItems(
+        id='medal-picker-radio', 
         className='',
         value="Total",
-        options=medal_options_dropdown
+        options=medal_options
     ),
 
     dcc.Graph(
@@ -66,6 +68,21 @@ app.layout = html.Div([
             df_medal[df_medal.columns[0]].max()
         ],
         marks = slider_marks
+    ),
+
+    # Box showing total number of medals shown
+    html.H3("Number of medals shown, gold, silver, bronze"),
+    html.P(
+        id='total-medals'
+    ),
+    html.P(
+        id='gold-medals'
+    ),
+    html.P(
+        id='silver-medals'
+    ),
+    html.P(
+        id='bronze-medals'
     ),
 
     html.H1("Top 10 - statistics for Canada"),
@@ -101,7 +118,11 @@ app.layout = html.Div([
 
 @app.callback(
     Output("medals-graph", "figure"),
-    Input("medal-picker-dropdown", "value"),
+    Output("gold-medals", "children"),
+    Output("silver-medals", "children"),
+    Output("bronze-medals", "children"),
+    Output("total-medals", "children"),
+    Input("medal-picker-radio", "value"),
     Input("time-slider", "value")
 )
 def update_graph(medal,time_index):
@@ -128,10 +149,13 @@ def update_graph(medal,time_index):
         (df_medal[df_medal.columns[0]] <= time_index[1])
     ]
     
+    # Save total number of medals shown
+    number_medals = [dff[medal].sum() for medal in medal_list]
+    
     # Update figure
     fig = px.bar(
         dff, x="Year", y=medal, color="Season",
-        title=f"The number of {medal}s from {time_index[0]} to {time_index[1]}",
+        title=f"The number of {medal} medals from {time_index[0]} to {time_index[1]}",
         labels={"value":"Number medals", "variable":"Medal"}
     )
 
@@ -142,7 +166,7 @@ def update_graph(medal,time_index):
     # the bar width need to be smaller
     # http://www.programshelp.com/help/python/Increase__bar_width___px_bar_.html
 
-    return fig
+    return fig, number_medals[0], number_medals[1], number_medals[2], number_medals[3]
 
 # Figure showing top10-statistics for Canada
 @app.callback(
