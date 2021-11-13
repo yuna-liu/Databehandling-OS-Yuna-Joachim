@@ -17,14 +17,12 @@ noc_iso = pd.read_csv("data/noc_iso.csv")
 noc_iso = noc_iso.iloc[:, 1:]
 
 # Radio options
-medal_options = [
-    {'label': medal, 'value': medal}
-    for medal in "Gold Silver Bronze Total".split()
-]
+medal_list = "Gold Silver Bronze Total".split()
+medal_options = [{'label': medal, 'value': medal} for medal in medal_list]
 
 
 # Dropdown options
-# Attribute dropdown
+# Sport dropdown
 sport_list = athlete_regions['Sport'].unique().tolist()
 sport_list.append("All Sports")
 sport_list.sort()
@@ -32,6 +30,23 @@ sport_options_dropdown = [
     {'label':sport, 'value': sport} 
     for sport in sport_list
 ]
+
+# Attribute dropdown options
+attr_dict = {
+    'Sport':'Sport', 
+    'Event':'Sport event', 
+    'Games':'Year & Season',
+    'Season':'Season', 
+    'Name':'Athlete', 
+    'Sex':'Athlete genders', 
+    'Age':'Athlete ages',
+    'City':'City'
+}
+attribute_options_dropdown = [
+    {'label':name, 'value': attribute} 
+    for attribute, name in attr_dict.items()
+]
+
 
 # Set initial settings
 # Data for all sports
@@ -106,10 +121,39 @@ app.layout = dbc.Container([
             # ),
         ], sm="5", md="3", lg="3", xl="2", className="mt-5 mx-5"),
 
-        html.Footer([
-            html.H3("120 years of Olympic games", className="h6"),
-            html.P("Dashboard av Yuna och Joachim")],
-            className="navbar fixed-bottom")
+    # 2nd Title, for second figure
+    dbc.Card([
+        dbc.CardBody(html.H1("Top (20) - statistics for global countries",
+            className='card-title text-dark mx-3'
+        ))
+    ], className='mt-4'),
+
+    # 2 columns
+    dbc.Row([
+        # 1st with dropdown menu
+        dbc.Col([
+            html.H3('Choose a statistic', className = 'm-2'),
+            dcc.Dropdown(
+                id = 'attribute-dropdown',
+                className = 'm-2',
+                value = "Sport",
+                options = attribute_options_dropdown
+            ),
+        ], lg='8', xl='2'),
+        # 2nd with figure
+        dbc.Col([
+            dcc.Graph(
+                id='top20-graph',
+                className=''
+            ),
+        ])
+    ], className='mt-4'),
+
+
+    html.Footer([
+        html.H3("120 years of Olympic games", className="h6"),
+        html.P("Dashboard av Yuna och Joachim")],
+        className="navbar fixed-bottom")
 
     ]),
     # stores an intermediate value on the clients browser for sharing between callbacks
@@ -172,6 +216,32 @@ def update_graph(json_df, chosen_sport, medal):
     sum_medals = f"{chosen_sport} {medal} Medals: {dff[medal].sum()}"
 
     return fig, sum_medals
+
+
+# Figure showing top20-statistics for global countries
+@app.callback(
+    Output("top20-graph", "figure"),
+    Input("attribute-dropdown", "value"),
+)
+def update_graph(chosen_attribute):
+    # Update df_medal after what is chosen
+    df_top = af.count_medals_n(athlete_regions, chosen_attribute)
+
+    # Sort by attribute and extract top 10
+    df_top = df_top.sort_values("Total", ascending=False)
+    df_top = df_top.head(20)
+
+    # Update figure
+    fig = px.bar(
+        df_top, x=chosen_attribute, y=medal_list,
+        title=f"Canada, top {attr_dict[chosen_attribute]}",
+        labels={"value":"Number medals", "variable":"Medal"}
+    )
+    fig.update_layout(barmode='group', xaxis_tickangle=45)
+
+    return fig
+
+
 
 if __name__ == '__main__':
     app.run_server(debug= True)
