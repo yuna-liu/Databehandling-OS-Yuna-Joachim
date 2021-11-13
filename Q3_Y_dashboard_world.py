@@ -31,6 +31,16 @@ sport_options_dropdown = [
     for sport in sport_list
 ]
 
+# Region dropdown
+athlete_regions = athlete_regions[athlete_regions['region'].notna()]
+region_list = athlete_regions['region'].unique().tolist()
+region_list.sort()
+region_options_dropdown = [
+    {'label':country, 'value': country} 
+    for country in region_list
+]
+
+
 # Attribute dropdown options
 attr_dict = {
     'Sport':'Sport', 
@@ -72,7 +82,7 @@ server = app.server  # needed for Heroku to connect to
 app.layout = dbc.Container([
     dbc.Card([
         dbc.CardBody([
-            html.H1('Global countries in 120 years of Olympic history: sports and results',
+            html.H1('Global countries in 120 years of Olympic history: atheles and results',
                     className='card-title text-dark mx-3')
         ])
     ], className="mt-4"),
@@ -123,7 +133,7 @@ app.layout = dbc.Container([
 
     # 2nd Title, for second figure
     dbc.Card([
-        dbc.CardBody(html.H1("Top (20) - statistics for global countries",
+        dbc.CardBody(html.H1("Top (10) - statistics for global countries",
             className='card-title text-dark mx-3'
         ))
     ], className='mt-4'),
@@ -132,18 +142,29 @@ app.layout = dbc.Container([
     dbc.Row([
         # 1st with dropdown menu
         dbc.Col([
-            html.H3('Choose a statistic', className = 'm-2'),
-            dcc.Dropdown(
-                id = 'attribute-dropdown',
-                className = 'm-2',
-                value = "Sport",
-                options = attribute_options_dropdown
-            ),
+            dbc.Card([
+                html.H3('Choose a region', className = 'm-2'),
+                dcc.Dropdown(
+                    id = 'region-dropdown',
+                    className = 'm-2',
+                    value = "Canada",
+                    options = region_options_dropdown
+                ),
+            ]),
+            dbc.Card([
+                html.H3('Choose a statistic', className = 'm-2'),
+                dcc.Dropdown(
+                    id = 'attribute-dropdown',
+                    className = 'm-2',
+                    value = "Sport",
+                    options = attribute_options_dropdown
+                ),
+            ])
         ], lg='8', xl='2'),
         # 2nd with figure
         dbc.Col([
             dcc.Graph(
-                id='top20-graph',
+                id='top10-graph',
                 className=''
             ),
         ])
@@ -220,22 +241,23 @@ def update_graph(json_df, chosen_sport, medal):
 
 # Figure showing top20-statistics for global countries
 @app.callback(
-    Output("top20-graph", "figure"),
+    Output("top10-graph", "figure"),
+    Input("region-dropdown", "value"),
     Input("attribute-dropdown", "value"),
 )
-def update_graph(chosen_attribute):
+def update_graph(chosen_region, chosen_attribute):
     # Update df_medal after what is chosen
-    df_top = af.count_medals_n(athlete_regions, chosen_attribute)
+    athlete_region = athlete_regions[athlete_regions['region']==chosen_region]
+    df_top = af2.count_medals(athlete_region, chosen_attribute)
 
     # Sort by attribute and extract top 10
-    df_top = df_top.sort_values("Total", ascending=False)
-    df_top = df_top.head(20)
+    df_top = df_top.head(10)
 
     # Update figure
     fig = px.bar(
-        df_top, x=chosen_attribute, y=medal_list,
-        title=f"Canada, top {attr_dict[chosen_attribute]}",
-        labels={"value":"Number medals", "variable":"Medal"}
+        df_top, x=df_top.index, y=medal_list,
+        title=f"{chosen_region}: top {attr_dict[chosen_attribute]}",
+        labels={"value":"Number of medals", "variable":"Medal"}
     )
     fig.update_layout(barmode='group', xaxis_tickangle=45)
 
