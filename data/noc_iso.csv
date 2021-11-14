@@ -2,7 +2,7 @@
 0,Afghanistan,AFG,AFG
 1,Albania,ALB,ALB
 2,Algeria,ALG,DZA
-3,American Samoa[1],ASA,ASM
+3,American Samoa,ASA,ASM
 4,Andorra,AND,AND
 5,Angola,ANG,AGO
 6,Antigua and Barbuda,ANT,ATG
@@ -27,7 +27,7 @@
 25,Bosnia and Herzegovina,BIH,BIH
 26,Botswana,BOT,BWA
 27,Brazil,BRA,BRA
-28,British Virgin Islands[2],IVB,VGB
+28,British Virgin Islands,IVB,VGB
 29,Brunei,BRU,BRN
 30,Bulgaria,BUL,BGR
 31,Burkina Faso,BUR,BFA
@@ -40,11 +40,11 @@
 38,Central African Republic,CAF,CAF
 39,Chad,CHA,TCD
 40,Chile,CHI,CHL
-41,"China, People's Republic of[3]",CHN,CHN
+41,"China, People's Republic of",CHN,CHN
 42,Colombia,COL,COL
 43,Comoros,COM,COM
-44,"Congo, Democratic Republic of the[4]",COD,COD
-45,"Congo, Republic of[5]",CGO,COG
+44,"Congo, Democratic Republic of the",COD,COD
+45,"Congo, Republic of",CGO,COG
 46,Cook Islands,COK,COK
 47,Costa Rica,CRC,CRI
 48,Côte d'Ivoire,CIV,CIV
@@ -54,7 +54,7 @@
 52,Czech Republic,CZE,CZE
 53,Denmark,DEN,DNK
 54,Djibouti,DJI,DJI
-55,Dominica[6],DMA,DMA
+55,Dominica,DMA,DMA
 56,Dominican Republic,DOM,DOM
 57,Ecuador,ECU,ECU
 58,Egypt,EGY,EGY
@@ -80,14 +80,14 @@
 78,Guyana,GUY,GUY
 79,Haiti,HAI,HTI
 80,Honduras,HON,HND
-81,Hong Kong[9],HKG,HKG
+81,Hong Kong,HKG,HKG
 82,Hungary,HUN,HUN
 83,Iceland,ISL,ISL
 84,India,IND,IND
 85,Indonesia,INA,IDN
 86,Iran,IRI,IRN
 87,Iraq,IRQ,IRQ
-88,Ireland[10],IRL,IRL
+88,Ireland,IRL,IRL
 89,Israel,ISR,ISR
 90,Italy,ITA,ITA
 91,Jamaica,JAM,JAM
@@ -96,8 +96,8 @@
 94,Kazakhstan,KAZ,KAZ
 95,Kenya,KEN,KEN
 96,Kiribati,KIR,KIR
-97,"Korea, Democratic People's Rep. (North)[11]",PRK,PRK
-98,"Korea, Republic of (South)[12]",KOR,KOR
+97,"Korea, Democratic People's Rep. (North)",PRK,PRK
+98,"Korea, Republic of (South)",KOR,KOR
 99,Kuwait,KUW,KWT
 100,Kyrgyzstan,KGZ,KGZ
 101,Laos,LAO,LAO
@@ -109,7 +109,7 @@
 107,Liechtenstein,LIE,LIE
 108,Lithuania,LTU,LTU
 109,Luxembourg,LUX,LUX
-110,North Macedonia[14],MKD,MKD
+110,North Macedonia,MKD,MKD
 111,Madagascar,MAD,MDG
 112,Malawi,MAW,MWI
 113,Malaysia,MAS,MYS
@@ -156,7 +156,7 @@
 154,Saint Kitts and Nevis,SKN,KNA
 155,Saint Lucia,LCA,LCA
 156,Saint Vincent and the Grenadines,VIN,VCT
-157,Samoa[1],SAM,WSM
+157,Samoa,SAM,WSM
 158,San Marino,SMR,SMR
 159,São Tomé and Príncipe,STP,STP
 160,Saudi Arabia,KSA,SAU
@@ -178,11 +178,11 @@
 176,Sweden,SWE,SWE
 177,Switzerland,SUI,CHE
 178,Syria,SYR,SYR
-179,Republic of China (Taiwan)[17],TPE,TWN
+179,Republic of China (Taiwan),TPE,TWN
 180,Tajikistan,TJK,TJK
 181,Tanzania,TAN,TZA
 182,Thailand,THA,THA
-183,Timor-Leste[18],TLS,TLS
+183,Timor-Leste,TLS,TLS
 184,Togo,TOG,TGO
 185,Tonga,TGA,TON
 186,Trinidad and Tobago,TTO,TTO
@@ -193,9 +193,9 @@
 191,Uganda,UGA,UGA
 192,Ukraine,UKR,UKR
 193,United Arab Emirates,UAE,ARE
-194,United Kingdom[19],GBR,GBR
+194,United Kingdom,GBR,GBR
 195,United States,USA,USA
-196,United States Virgin Islands[20],ISV,VIR
+196,United States Virgin Islands,ISV,VIR
 197,Uruguay,URU,URY
 198,Uzbekistan,UZB,UZB
 199,Vanuatu,VAN,VUT

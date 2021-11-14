@@ -227,7 +227,7 @@ def update_graph(json_df, chosen_sport, medal):
     dff_sort = dff.sort_values(medal, ascending=False)
     dff_sort = dff_sort.head(10)
     fig2 = px.bar(dff_sort, x=dff_sort["Country"], 
-            y=medal, color="Year", title=f"Hightlights in {chosen_sport}: top 10 {medal} medals",
+            y=medal, color="Year", title=f"Hightlights in {chosen_sport}: top 10 countries of {medal} medals",
             labels={"value":"Number of medals", "variable":"Country"}
     )
 

@@ -18,6 +18,8 @@ datetime = "*"
 nbformat = "*"
 numexpr = "*"
 lxml = "*"
+beautifulsoup4 = "*"
+requests = "*"
 
 [dev-packages]
 
