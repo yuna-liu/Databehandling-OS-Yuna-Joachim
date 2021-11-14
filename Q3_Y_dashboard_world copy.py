@@ -115,21 +115,11 @@ app.layout = dbc.Container([
             
         ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
 
+
         dbc.Col([
-            dbc.Row(
-                dbc.Card([
-                    html.H2("Highlights", className="h5 mt-3 mx-3"),
-                    dcc.Graph(id="highlights-graph", className ="")
-                ]), className="mt-5 h-25"
-            ),
-            # dbc.Row(
-            #     dbc.Card([
-            #         html.H2("Top athletes", className="h5 mt-3 mx-3"),
-            #         #html.P(id="lowest-value", className="text-danger h1 mx-2")
-            #     ]),
-            #     className="mt-5 h-25"
-            # ),
-        ], sm="5", md="3", lg="3", xl="2", className="mt-5 mx-5"),
+            dcc.Graph(id="highlights-graph"),
+
+        ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
 
     # 2nd Title, for second figure
     dbc.Card([
