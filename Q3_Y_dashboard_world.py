@@ -218,7 +218,7 @@ def update_graph(json_df, chosen_sport, medal):
                         scope=None,
                         hover_name="Country",
                         animation_frame="Year",
-                        title = f"Geographic map on {chosen_sport} {medal} medals in the 120 Olympics history", 
+                        title = f"Geographic map: {chosen_sport} {medal} medals", 
                         range_color=[0,dff[medal].quantile(0.9)],
                         color_continuous_scale=px.colors.sequential.Plasma)
       
@@ -228,7 +228,7 @@ def update_graph(json_df, chosen_sport, medal):
     dff_sort = dff.sort_values(medal, ascending=False)
     dff_sort = dff_sort.head(10)
     fig2 = px.bar(dff_sort, x=dff_sort["Country"], 
-            y=medal, color="Year", title=f"Hightlights in {chosen_sport}: top 10 countries of {medal} medals",
+            y=medal, color="Year", title=f"Hightlights in {chosen_sport}: top ten {medal} medals",
             labels={"value":"Number of medals", "variable":"Country"}
     )
 
