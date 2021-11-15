@@ -20,6 +20,7 @@ numexpr = "*"
 lxml = "*"
 beautifulsoup4 = "*"
 requests = "*"
+gunicorn = "*"
 
 [dev-packages]
 
