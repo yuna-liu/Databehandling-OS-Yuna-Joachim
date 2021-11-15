@@ -13,10 +13,26 @@ import analyze_functions as af
 # Import data
 df = pd.read_csv("data/canada.csv")
 
+# Column names
+# ['Unnamed: 0', 'ID', 'Name', 'HashName', 'Sex', 'Age', 'Height',
+#       'Weight', 'Team', 'NOC', 'Games', 'Year', 'Season', 'City', 'Sport',
+#       'Event', 'Medal']
+
 
 # Medal options
 medal_list = "Gold Silver Bronze Total".split()
 medal_options = [{'label': medal, 'value': medal} for medal in medal_list]
+
+# Medal-Time slider options 
+slider_marks = {
+    str(year): str(year) for year in range(
+        df["Year"].min(), df["Year"].max(), 10
+    )
+}
+
+# Set initial settings for figure1, medal-time-figure
+df_medal = af.count_medals_n(df, "Year")
+
 
 # Attribute dropdown options
 attr_dict = {
@@ -25,8 +41,8 @@ attr_dict = {
     'Games':'Year & Season',
     'Season':'Season', 
     'Name':'Athlete', 
-    'Sex':'Athlete genders', 
-    'Age':'Athlete ages',
+    'Sex':'Athlete gender', 
+    'Age':'Athlete age',
     'City':'City'
 }
 attribute_options_dropdown = [
@@ -34,15 +50,30 @@ attribute_options_dropdown = [
     for attribute, name in attr_dict.items()
 ]
 
-# Time slider options 
-slider_marks = {
-    str(year): str(year) for year in range(
-        df["Year"].min(), df["Year"].max(), 10
-    )
+
+# Athletes dropdown options
+gender_options = [
+    {'label':'Both', 'value':'Both'},
+    {'label':'Female', 'value':'F'},
+    {'label':'Male', 'value':'M'}
+]
+athlete_dict = {
+    'Sex':'Gender',
+    'Age':'Age',
+    'Height':'Height',
+    'Weight':'Weight'
+}
+unit_dict = {
+    'Sex':'Gender',
+    'Age':'Age (years)',
+    'Height':'Height (centimetres)',
+    'Weight':'Weight (kilograms)'
 }
 
-# Set initial settings for figure1, time-figure
-df_medal = af.count_medals_n(df, "Year")
+athlete_options = [
+    {'label':name, 'value': attribute} 
+    for attribute, name in athlete_dict.items()
+]
 
 
 # Set theme settings
@@ -127,7 +158,7 @@ app.layout = dbc.Container([
 
     # 2nd Title, for second figure
     dbc.Card([
-        dbc.CardBody(html.H1("Top (10) - statistics for Canada",
+        dbc.CardBody(html.H1("Top statistics for Canada",
             className='text-primary-m-4'
         ))
     ], className='mt-5'),
@@ -148,6 +179,46 @@ app.layout = dbc.Container([
         dbc.Col([
             dcc.Graph(
                 id='top10-graph',
+                className=''
+            ),
+        ])
+    ], className='mt-4'),
+
+    # 3rd title, for histograms
+    dbc.Card([
+        dbc.CardBody(html.H1("Athlete statistics",
+            className='text-primary-m-4'
+        ))
+    ]),
+
+    # two columns
+    dbc.Row([
+        dbc.Col([
+            dbc.Card([
+            # 1st with dropdown menu
+                html.H3('Choose a gender', className = 'm-2'),
+                dcc.RadioItems(
+                    id='gender-picker-radio', 
+                    className='m-2',
+                    value="Both",
+                    options=gender_options,
+                    labelStyle={'display': 'block'}
+                ),
+
+                html.H3('Choose a statistic', className = 'm-2'),
+                dcc.RadioItems(
+                    id='athlete-radio', 
+                    className='m-2',
+                    value="Age",
+                    options=athlete_options,
+                    labelStyle={'display': 'block'}
+                ),
+            ], className='mt-1'),
+        ], lg='8', xl='3'),
+        # 2nd with figure
+        dbc.Col([
+            dcc.Graph(
+                id='athlete-graph',
                 className=''
             ),
         ])
@@ -231,6 +302,28 @@ def update_graph(chosen_attribute):
         labels={"value":"Number medals", "variable":"Medal"}
     )
     fig.update_layout(barmode='group', xaxis_tickangle=45)
+
+    return fig
+
+
+# Histograms with general Canadian statistics
+@app.callback(
+    Output("athlete-graph", "figure"),
+    Input("athlete-radio", "value"),
+    Input("gender-picker-radio", "value")
+)
+def update_graph(athlete_attribute, athlete_gender):
+
+    # TODO list of units to the labels
+
+    # Update figure
+
+    if athlete_gender == "Both":
+        fig = px.histogram(df, x=athlete_attribute)
+    else:
+        fig = px.histogram(df[df["Sex"]==athlete_gender], x=athlete_attribute)
+    fig.layout.yaxis.title.text = "Number of athletes"
+    fig.layout.xaxis.title.text = unit_dict[athlete_attribute]
 
     return fig
 

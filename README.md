@@ -17,8 +17,16 @@ Dashboard-idéer:
 
 TODO:
 
-- Lägga in tids-linje-plot-koderna till Dashboarden
+Anteckningar till presentation:
 
-- Lägga in övriga figurer i dashboard också (icke tidsberoende)
+- Visa dashboard, vad visar vi, ett par intressanta saker man kan se i det vi presenterar.
 
-- Kod för att extrahera intressanta siffror, antal medaljer av olika slag för det man har valt (år, sport, säsong)
+- Visa koderna, hur vi har tänkt, visa "count medals"-funktionen
+
+- Hur har arbetet gått? Mycket distans, Joachim sjuk halva tiden, problem med två olika Python-versioner, följande problem med gir-merge, git bash blev räddningen!
+
+Kod och video ska lämnas in på fredag, 19/11
+
+
+
+
