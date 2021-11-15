@@ -46,7 +46,7 @@ df_medal = af.count_medals_n(df, "Year")
 
 
 # Set theme settings
-stylesheets = [dbc.themes.JOURNAL]
+stylesheets = [dbc.themes.MATERIA]
 
 # Initiate dashboard
 #app = dash.Dash(__name__)
@@ -84,7 +84,7 @@ app.layout = dbc.Container([
             dbc.Card([
                 dbc.Row([
                     html.H3(
-                        "Number of medals shown.",
+                        "Number of medals shown",
                         className='m-2'
                     ),
                     dbc.Col([
