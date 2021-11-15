@@ -6,10 +6,8 @@ from dash.dependencies import Output, Input
 import dash_bootstrap_components as dbc
 
 import plotly_express as px
-import plotly.graph_objects as go
 
 import analyze_functions as af
-import sub_df as af2
 
 # Import data
 athlete_regions = pd.read_csv("data/athlete_regions.csv")
@@ -59,9 +57,35 @@ attribute_options_dropdown = [
 ]
 
 
+# Athletes dropdown options
+gender_options = [
+    {'label':'Both', 'value':'Both'},
+    {'label':'Female', 'value':'F'},
+    {'label':'Male', 'value':'M'}
+]
+athlete_dict = {
+    'Sex':'Gender',
+    'Age':'Age',
+    'Height':'Height',
+    'Weight':'Weight'
+}
+unit_dict = {
+    'Sex':'Gender',
+    'Age':'Age (years)',
+    'Height':'Height (centimetres)',
+    'Weight':'Weight (kilograms)'
+}
+
+athlete_options = [
+    {'label':name, 'value': attribute} 
+    for attribute, name in athlete_dict.items()
+]
+
+
+
 # Set initial settings
 # Data for all sports
-df = af2.count_medals(athlete_regions, "NOC", "Year")
+df = af.count_medals(athlete_regions, "NOC", "Year")
 df = df.reset_index()
 df_iso = df.merge(noc_iso, on="NOC", how="left")
 df_iso = df_iso.sort_values(by=["Year", "NOC"])
@@ -88,6 +112,8 @@ app.layout = dbc.Container([
         ])
     ], className="mt-4"),
 
+    # 1st title, for sport statistics
+    ## the medals for countries per year
     dbc.Row(className='mt-4', children=[
         dbc.Col(
             # responsivity
@@ -123,6 +149,8 @@ app.layout = dbc.Container([
         ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
 
     # 2nd Title, for second figure
+    # sport statistics for each country over years
+    # other statistics for each country over years
     dbc.Card([
         dbc.CardBody(html.H1("Top (10) - statistics for global countries",
             className='card-title text-dark mx-3'
@@ -161,6 +189,47 @@ app.layout = dbc.Container([
         ])
     ], className='mt-4'),
 
+    # 3rd title, for age histograms 
+    # and other histograms of atheletes
+    dbc.Card([
+        dbc.CardBody(html.H1("Athlete statistics",
+            className='text-primary-m-4'
+        ))
+    ]),
+
+    # two columns
+    dbc.Row([
+        dbc.Col([
+            dbc.Card([
+            # 1st with dropdown menu
+                html.H3('Choose a gender', className = 'm-2'),
+                dcc.RadioItems(
+                    id='gender-picker-radio', 
+                    className='m-2',
+                    value="Both",
+                    options=gender_options,
+                    labelStyle={'display': 'block'}
+                ),
+
+                html.H3('Choose a statistic', className = 'm-2'),
+                dcc.RadioItems(
+                    id='athlete-radio', 
+                    className='m-2',
+                    value="Age",
+                    options=athlete_options,
+                    labelStyle={'display': 'block'}
+                ),
+            ], className='mt-1'),
+        ], lg='8', xl='3'),
+        # 2nd with figure
+        dbc.Col([
+            dcc.Graph(
+                id='athlete-graph',
+                className=''
+            ),
+        ])
+    ], className='mt-4'),
+
 
     html.Footer([
         html.H3("120 years of Olympic games", className="h6"),
@@ -189,7 +258,7 @@ def filter_df(sport):
     # Data for chosen sport
     else:
         df_sport = athlete_regions[athlete_regions['Sport']==sport]
-        df_sport = af2.count_medals(df_sport, "NOC", "Year")
+        df_sport = af.count_medals(df_sport, "NOC", "Year")
         df_sport = df_sport.reset_index()
         dff = df_sport.merge(noc_iso, on="NOC", how="left")
         dff = dff.sort_values(by=["Year", "NOC"])
@@ -235,7 +304,7 @@ def update_graph(json_df, chosen_sport, medal):
     return fig, fig2
 
 
-# Figure showing top20-statistics for global countries
+# Figure showing top10-statistics for global countries
 @app.callback(
     Output("top10-graph", "figure"),
     Input("region-dropdown", "value"),
@@ -263,6 +332,28 @@ def update_graph(chosen_region, chosen_attribute):
     return fig
 
 
+# Histograms with athletes statistics in each country
+@app.callback(
+    Output("athlete-graph", "figure"),
+    Input("athlete-radio", "value"),
+    Input("gender-picker-radio", "value")
+)
+def update_graph(athlete_attribute, athlete_gender):
+    """
+    Figure with statistics for athletes
+    """
+
+    # Update figure (according to chosen gender)
+    if athlete_gender == "Both":
+        fig = px.histogram(df, x=athlete_attribute)
+    else:
+        fig = px.histogram(df[df["Sex"]==athlete_gender], x=athlete_attribute)
+    
+    # Update axis texts
+    fig.layout.yaxis.title.text = "Number of athletes"
+    fig.layout.xaxis.title.text = unit_dict[athlete_attribute]
+
+    return fig
 
 if __name__ == '__main__':
     app.run_server(debug= True)
