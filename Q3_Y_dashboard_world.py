@@ -34,6 +34,7 @@ sport_options_dropdown = [
 # Region dropdown
 athlete_regions = athlete_regions[athlete_regions['region'].notna()]
 region_list = athlete_regions['region'].unique().tolist()
+region_list.append("All regions")
 region_list.sort()
 region_options_dropdown = [
     {'label':country, 'value': country} 
@@ -115,21 +116,11 @@ app.layout = dbc.Container([
             
         ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
 
+
         dbc.Col([
-            dbc.Row(
-                dbc.Card([
-                    html.H2("Highlights", className="h5 mt-3 mx-3"),
-                    dcc.Graph(id="highlights-graph", className ="")
-                ]), className="mt-5 h-25"
-            ),
-            # dbc.Row(
-            #     dbc.Card([
-            #         html.H2("Top athletes", className="h5 mt-3 mx-3"),
-            #         #html.P(id="lowest-value", className="text-danger h1 mx-2")
-            #     ]),
-            #     className="mt-5 h-25"
-            # ),
-        ], sm="5", md="3", lg="3", xl="2", className="mt-5 mx-5"),
+            dcc.Graph(id="highlights-graph"),
+
+        ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
 
     # 2nd Title, for second figure
     dbc.Card([
@@ -147,7 +138,7 @@ app.layout = dbc.Container([
                 dcc.Dropdown(
                     id = 'region-dropdown',
                     className = 'm-2',
-                    value = "Canada",
+                    value = "All regions",
                     options = region_options_dropdown
                 ),
             ]),
@@ -237,7 +228,7 @@ def update_graph(json_df, chosen_sport, medal):
     dff_sort = dff.sort_values(medal, ascending=False)
     dff_sort = dff_sort.head(10)
     fig2 = px.bar(dff_sort, x=dff_sort["Country"], 
-            y=medal, color="Year", title=f"Hightlights in {chosen_sport}: top 10 {medal} medals",
+            y=medal, color="Year", title=f"Hightlights in {chosen_sport}: top 10 countries of {medal} medals",
             labels={"value":"Number of medals", "variable":"Country"}
     )
 
@@ -251,9 +242,12 @@ def update_graph(json_df, chosen_sport, medal):
     Input("attribute-dropdown", "value"),
 )
 def update_graph(chosen_region, chosen_attribute):
-    # Update df_medal after what is chosen
-    athlete_region = athlete_regions[athlete_regions['region']==chosen_region]
-    df_top = af2.count_medals(athlete_region, chosen_attribute)
+    # Update dataframe after chosen region
+    if chosen_region == "All regions":
+        df_top = af2.count_medals(athlete_regions, chosen_attribute)
+    else:
+        athlete_region = athlete_regions[athlete_regions['region']==chosen_region]
+        df_top = af2.count_medals(athlete_region, chosen_attribute)
 
     # Sort by attribute and extract top 10
     df_top = df_top.head(10)
