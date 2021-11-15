@@ -30,7 +30,7 @@ slider_marks = {
     )
 }
 
-# Set initial settings for figure1, medal-time-figure
+# Set dataframe for figure1, medal-time-figure
 df_medal = af.count_medals_n(df, "Year")
 
 
@@ -223,11 +223,6 @@ app.layout = dbc.Container([
             ),
         ])
     ], className='mt-4'),
-
-
-    # TODO? figure with whatever versus whatever?
-    # Could be interesting actually, like number of athletes per year, etc
-
 ])
 
 @app.callback(
@@ -288,6 +283,9 @@ def update_graph(medal,time_index):
     Input("attribute-dropdown", "value"),
 )
 def update_graph(chosen_attribute):
+    """
+    Figure with top-best for Canada
+    """
     # Update df_medal after what is chosen
     df_top = af.count_medals_n(df, chosen_attribute)
 
@@ -306,22 +304,24 @@ def update_graph(chosen_attribute):
     return fig
 
 
-# Histograms with general Canadian statistics
+# Histograms with Canadian athletes statistics
 @app.callback(
     Output("athlete-graph", "figure"),
     Input("athlete-radio", "value"),
     Input("gender-picker-radio", "value")
 )
 def update_graph(athlete_attribute, athlete_gender):
+    """
+    Figure with statistics for athletes
+    """
 
-    # TODO list of units to the labels
-
-    # Update figure
-
+    # Update figure (according to chosen gender)
     if athlete_gender == "Both":
         fig = px.histogram(df, x=athlete_attribute)
     else:
         fig = px.histogram(df[df["Sex"]==athlete_gender], x=athlete_attribute)
+    
+    # Update axis texts
     fig.layout.yaxis.title.text = "Number of athletes"
     fig.layout.xaxis.title.text = unit_dict[athlete_attribute]
 
