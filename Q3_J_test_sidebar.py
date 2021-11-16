@@ -26,13 +26,24 @@ import plotly_express as px
 import analyze_functions as af
 
 
-# Set both overall settings and sidebar settings
-app = dash.Dash(external_stylesheets=[dbc.themes.MATERIA])
+
+# Set overall settings
+app = dash.Dash(
+    __name__, 
+    external_stylesheets = [dbc.themes.MATERIA],
+    meta_tags = [
+        dict(
+            name="viewport", 
+            content="width=device-width, initial-scale=1.0"
+        )
+    ]
+)
 
 # needed for Heroku to connect to
 server = app.server
 
 
+# Set sidebar settings
 # the style arguments for the sidebar. Position:fixed and a fixed width
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -75,8 +86,8 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 # Import data
 df_orig = pd.read_csv("data/canada.csv")
 athlete_regions = pd.read_csv("data/athlete_regions.csv")
-noc_iso = pd.read_csv("data/noc_iso.csv")
-noc_iso = noc_iso.iloc[:, 1:]
+athlete_iso = pd.read_csv("data/athlete_iso.csv").iloc[:, 1:]
+noc_iso = pd.read_csv("data/noc_iso.csv").iloc[:, 1:]
 
 
 # Settings for Canada statistics
@@ -316,21 +327,23 @@ def render_page_content(pathname):
     # Global statistics
     elif pathname == "/page-3":
         return [
+             # the first section
             dbc.Card([
                 dbc.CardBody([
                     html.H1(
-                        'Global 120 years of Olympic history',
+                        'Sport statistics for global countries',
                         className='card-title text-dark mx-3')
                 ])
             ], className="mt-4"),
 
-            # 1st title, for sport statistics
-            ## the medals for countries per year
+            # fix sport dropdown and medal radio
+            # fix graphs for the sum of medals for each countries in the 120 years
             dbc.Row(className='mt-4', children=[
                 dbc.Col(
                     # responsivity
                     html.P("Choose sport:"), 
-                    xs="12", sm="12", md="6", lg="4", xl={"size": 1, "offset": 1},
+                    xs="12", sm="12", md="6", lg="4", 
+                    xl={"size": 1, "offset": 1},
                     className="mt-1"
                 ),
                 dbc.Col(
@@ -339,34 +352,53 @@ def render_page_content(pathname):
                         className='',
                         options=sport_options_dropdown,
                         value='All Sports',
-                        placeholder='All Sports'
-                    ), xs="12", sm="12", md="12", lg="4", xl="3"),
+                        placeholder='All Sports'), 
+                        xs="12", sm="12", md="12", lg="4", xl="3"
+                    ),
                 dbc.Col([
                     dbc.Card([
                         dcc.RadioItems(
-                            id='medal-radio-world', className="m-1",
+                            id='medal-radio-world', 
+                            className="m-1",
                             options=medal_options,
                             value='Total'
                         ),
                     ])
                 ], xs="12", sm="12", md="12", lg='4', xl="3"),
             ]),
+
+            dbc.Row([
+                dbc.Col([
+                    dcc.Graph(id="sum-medals-map"),
+                ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
+
+                dbc.Col([
+                    dcc.Graph(id="sum-medals-top10"),
+                ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
+            ]),
+            
+            ## The second section
+            dbc.Card([
+                dbc.CardBody([
+                    html.H1(
+                        'Sport statistics for global countries over years',
+                        className='card-title text-dark mx-3'
+                    )
+                ])
+            ], className="mt-4"),
             dbc.Row([
                 dbc.Col([
                     dcc.Graph(id="medals-graph-world"),
                 ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
+
                 dbc.Col([
                     dcc.Graph(id="highlights-graph-world"),
                 ], lg={"size": "6", "offset": 0}, xl={"size": "6", "offset": 0}),
-            ]),
-
-            # 2nd Title, for second figure
-            # sport statistics for each country over years
-            # other statistics for each country over years
+    
+            # the 3rd section
             dbc.Card([
                 dbc.CardBody(
-                    html.H2(
-                    "Top worldwide statistics",
+                    html.H1("Top (10) - statistics for global countries",
                     className='card-title text-dark mx-3'
                     )
                 )
@@ -404,14 +436,15 @@ def render_page_content(pathname):
                 ])
             ], className='mt-4'),
 
-            # 3rd title, for age histograms 
+            # The 4th section: for age histograms 
             # and other histograms of atheletes
-            dbc.CardBody(
-                html.H2(
-                    "Athlete statistics",
+            dbc.Card([
+                dbc.CardBody(
+                    html.H1("Sport statistics for athletes",
                     className='text-primary-m-4'
-                )
-            ),
+                ))
+            ]),
+
             # two columns
             dbc.Row([
                 dbc.Col([
@@ -444,10 +477,17 @@ def render_page_content(pathname):
                     ),
                 ])
             ], className='mt-4'),
-            # stores an intermediate value on the clients browser for sharing 
-            # between callbacks
-            dcc.Store(id="filtered-df")
-        ]
+
+            # TODO: add to canada parts also?
+            html.Footer([
+                html.H3("120 years of Olympic games", className="h6"),
+                html.P("Dashboard av Yuna och Joachim")],
+                className="navbar fixed-bottom")
+            ]),
+
+        # stores an intermediate value on the clients browser for sharing between callbacks
+        dcc.Store(id="filtered-df")
+    ]
 
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
@@ -576,6 +616,9 @@ def update_graph(athlete_attribute, athlete_gender):
 
 # -Global-
 # Worldwide pages, 4-6
+
+# when something changes in the input component, the code in function below will run and update the output component
+# the components are connected through their id
 @app.callback(
     Output("filtered-df", "data"), 
     Input("sport-dropdown-world", "value")
@@ -589,20 +632,57 @@ def filter_df(sport):
 
     # Data for all sports
     if sport=="All Sports":
-        dff = df_iso
+        df = af.count_medals_n(athlete_iso, "Country", "ISO", "Year")
     # Data for chosen sport
     else:
-        df_sport = athlete_regions[athlete_regions['Sport']==sport]
-        df_sport = af.count_medals_n(df_sport, "NOC", "Year")
-        df_sport = df_sport.reset_index()
-        dff = df_sport.merge(noc_iso, on="NOC", how="left")
-        dff = dff.sort_values(by=["Year", "NOC"])
+        df = af.count_medals_n(athlete_iso, "Country", "ISO", "Year", "Sport")
+        df = df[df["Sport"]==sport]
 
-    return dff.to_json()
-
+    return df.to_json()
 
 # -World-1
-# World-map figure
+# World map, medals per sport and per country
+@app.callback(
+    Output("sum-medals-map", "figure"),
+    Output("sum-medals-top10", "figure"),
+    Input("filtered-df", "data"),
+    Input("sport-dropdown-world", "value"),
+    Input("medal-radio-world", "value"),
+)
+def update_graph(json_df, sport, medal):
+    # Extract data (country and medals)
+    df = pd.read_json(json_df)
+    dff= df.groupby(["Country", "ISO"]).sum().reset_index()
+    dff = dff.loc[:, ["Country", "ISO", "Gold", "Silver", "Bronze", "Total"]]
+   
+    # Update figure
+    fig1 = px.choropleth(
+        dff, locations="ISO",
+        color=medal,
+        scope=None,
+        hover_name="Country",
+        title = f"Geographic map with sum of {medal} medals in {sport} games", 
+        range_color=[0,dff[medal].quantile(0.95)],
+        color_continuous_scale=px.colors.sequential.Plasma
+    )
+    
+    fig1["layout"].pop("updatemenus")
+
+    # Extract top ten countries for a bar plot    
+    temp = dff.sort_values(medal, ascending=False)
+    top10_all = temp.head(10)
+  
+    # Update figure with top10 countries per sport
+    fig2 = px.bar(
+        top10_all, y="Country", x=medal,
+        title=f"top 10 countries by sum of {medal} medals"
+    )
+     
+    return fig1, fig2
+
+
+# -World-2
+# World-map figure over years
 @app.callback(
     Output("medals-graph-world", "figure"),
     Output("highlights-graph-world", "figure"),
@@ -610,7 +690,7 @@ def filter_df(sport):
     Input("sport-dropdown-world", "value"),
     Input("medal-radio-world", "value")
 )
-def update_graph(json_df, chosen_sport, medal):
+def update_graph(json_df, sport, medal):
 
     dff = pd.read_json(json_df)
     fig = px.choropleth(
@@ -619,26 +699,27 @@ def update_graph(json_df, chosen_sport, medal):
         scope=None,
         hover_name="Country",
         animation_frame="Year",
-        title = f"Geographic map: {chosen_sport} {medal} medals", 
-        range_color=[0,dff[medal].quantile(0.9)],
+        title = f"Geographic map: {sport} {medal} medals over years",
+        range_color=[0,dff[medal].quantile(0.95)],
         color_continuous_scale=px.colors.sequential.Plasma
     )
 
     fig["layout"].pop("updatemenus")
 
-    # Highlights figure, with top ten values
-    dff_sort = dff.sort_values(medal, ascending=False)
-    dff_sort = dff_sort.head(10)
+    # Highlights figure, with top ten
+    temp = dff.sort_values(medal, ascending=False)
+    top10_all = temp.head(10)
+ 
     fig2 = px.bar(
-        dff_sort, x=dff_sort["Country"], y=medal, color="Year", 
-        title=f"Hightlights in {chosen_sport}: top ten {medal} medals",
+        top10_all, y="Country", x=medal, color="Year",
+        title=f"Hightlights in {sport}: top ten {medal} medals",
         labels={"value":"Number of medals", "variable":"Country"}
     )
 
     return fig, fig2
 
 
-# -World-2
+# -World-3
 # Figure showing top10-statistics for global countries
 @app.callback(
     Output("top10-graph-world", "figure"),
@@ -662,14 +743,15 @@ def update_graph(chosen_region, chosen_attribute):
     fig = px.bar(
         df_top, x=chosen_attribute, y=medal_list, 
         title=f"{chosen_region}: top {attr_dict[chosen_attribute]}",
-        labels={"value":"Number of medals", "variable":"Medal"}
+        labels={"value":"Number of medals"}
     )
+    fig.layout.yaxis.title.text = ""
     fig.update_layout(barmode='group', xaxis_tickangle=45)
 
     return fig
 
 
-# -World-3
+# -World-4
 # Histograms with athletes statistics in each country
 @app.callback(
     Output("athlete-graph-world", "figure"),
@@ -694,7 +776,8 @@ def update_graph(chosen_region, athlete_attribute, athlete_gender):
     else:
         fig = px.histogram(
             athlete_region[athlete_region["Sex"]==athlete_gender], 
-            x=athlete_attribute)
+            x=athlete_attribute
+        )
     
     # Update axis texts
     fig.layout.yaxis.title.text = "Number of athletes"
@@ -706,4 +789,4 @@ def update_graph(chosen_region, athlete_attribute, athlete_gender):
 # Run server or debug mode?
 if __name__ == "__main__":
     app.run_server(debug=True)
-    #app.run_server(port=8888)
+    #app.run_server(port=8050)
