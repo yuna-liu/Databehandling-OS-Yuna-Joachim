@@ -1,6 +1,7 @@
-# Main: contains side board and calls the two dashboards.
-# Based on
+# Main: contains side board and the two dashboards.
+# Side board is based on
 # https://dash-bootstrap-components.opensource.faculty.ai/examples/simple-sidebar/page-2
+# Included info text:
 """
 This app creates a simple sidebar layout using inline style arguments and the
 dbc.Nav component.
@@ -24,13 +25,15 @@ import plotly_express as px
 
 import analyze_functions as af
 
+
 # Set both overall settings and sidebar settings
 app = dash.Dash(external_stylesheets=[dbc.themes.MATERIA])
 
 # needed for Heroku to connect to
 server = app.server
 
-# the style arguments for the sidebar. We use position:fixed and a fixed width
+
+# the style arguments for the sidebar. Position:fixed and a fixed width
 SIDEBAR_STYLE = {
     "position": "fixed",
     "top": 0,
@@ -51,21 +54,16 @@ CONTENT_STYLE = {
 
 sidebar = html.Div(
     [
-        html.H2("OS-Project", className="display-5"),
+        html.H2("Olympics-Project", className="display-5"),
         html.Hr(),
         html.P(
             "Yuna Liu and Joachim Wiegert", className="lead"
         ),
-        dbc.Nav(
-            [
+        dbc.Nav([
                 dbc.NavLink("Canada medals", href="/page-1", active="exact"),
-                dbc.NavLink("Canada top statistics", href="/page-2", active="exact"),
-                dbc.NavLink("Canada athletes", href="/page-3", active="exact"),
-                dbc.NavLink("Global statistics", href="/page-4", active="exact"),
-            ],
-            vertical=True,
-            pills=True,
-        ),
+                dbc.NavLink("Canada statistics", href="/page-2", active="exact"),
+                dbc.NavLink("Global statistics", href="/page-3", active="exact"),
+        ], vertical=True, pills=True),
     ],
     style=SIDEBAR_STYLE,
 )
@@ -166,9 +164,7 @@ region_options_dropdown = [
 ]
 
 
-
 # Start dashboard
-
 @app.callback(
     Output("page-content", "children"), 
     [Input("url", "pathname")]
@@ -180,7 +176,7 @@ def render_page_content(pathname):
             # Main Title
             dbc.Card([
                 dbc.CardBody(html.H1(
-                    'Canadian 120 years of Olympic history',
+                    'Canada: 120 years of Olympic history',
                     className='text-primary-m-3'
                 ))
             ], className='mt-3'),
@@ -245,7 +241,7 @@ def render_page_content(pathname):
             ], className='mt-4')
         ]
 
-    # canada top statistiscs
+    # Canada statistiscs
     elif pathname == "/page-2":
         return [
             # Main Title (top statistics)
@@ -256,11 +252,12 @@ def render_page_content(pathname):
                 ))
             ], className='mt-3'),
 
-            # 2 columns
+            # 2 Rows, 1 with menu, 1 with figure
             dbc.Row([
-                # 1st with dropdown menu
                 dbc.Col([
-                    html.H3('Choose a statistic', className = 'm-2'),
+                    html.H3('Choose a statistic:', className = 'm-2'),
+                ], lg='8', xl='4'),
+                dbc.Col([
                     dcc.Dropdown(
                         id = 'attribute-dropdown',
                         className = 'm-2',
@@ -268,26 +265,20 @@ def render_page_content(pathname):
                         options = attribute_options_dropdown
                     ),
                 ], lg='8', xl='2'),
+            ], className='mt-4'),
+            dbc.Row([
                 # 2nd with figure
-                dbc.Col([
                     dcc.Graph(
                         id='top10-graph',
                         className=''
-                    ),
-                ])
+                    )
             ], className='mt-4'),
-        ]
 
-
-    elif pathname == "/page-3":
-        return [
             # Main Title (athlete statistics)
-            dbc.Card([
-                dbc.CardBody(html.H1(
-                    'Canadian 120 years of Olympic history',
-                    className='text-primary-m-3'
-                ))
-            ], className='mt-3'),
+            dbc.CardBody(html.H2(
+                'Canadian athletes',
+                className='text-primary-m-3'
+            )),
             # two columns
             dbc.Row([
                 dbc.Col([
@@ -311,18 +302,19 @@ def render_page_content(pathname):
                             labelStyle={'display': 'block'}
                         ),
                     ], className='mt-1'),
-                ], lg='8', xl='3'),
+                ], lg='8', xl='2'),
                 # 2nd with figure
                 dbc.Col([
                     dcc.Graph(
                         id='athlete-graph',
                         className=''
                     ),
-                ])
+                ], lg='8', xl='9'),
             ], className='mt-4'),
         ]
 
-    elif pathname == "/page-4":
+    # Global statistics
+    elif pathname == "/page-3":
         return [
             dbc.Card([
                 dbc.CardBody([
@@ -452,7 +444,8 @@ def render_page_content(pathname):
                     ),
                 ])
             ], className='mt-4'),
-            # stores an intermediate value on the clients browser for sharing between callbacks
+            # stores an intermediate value on the clients browser for sharing 
+            # between callbacks
             dcc.Store(id="filtered-df")
         ]
 
@@ -490,7 +483,8 @@ def update_graph(medal,time_index):
 
     medal is type of medal, total, gold, silver, bronze
 
-    This is inspired by "Create Dashboard in Plotly Dash with dependent drop down list (chained callbacks) and range slider":
+    This is inspired by "Create Dashboard in Plotly Dash with dependent 
+    drop down list (chained callbacks) and range slider":
     https://www.youtube.com/watch?v=TsYwhX0hEA8&t=244s
     """
 
@@ -543,10 +537,11 @@ def update_graph(chosen_attribute):
     # Update figure
     fig = px.bar(
         df_top, x=chosen_attribute, y=medal_list,
-        title=f"Canada, top {attr_dict[chosen_attribute]}",
-        labels={"value":"Number medals", "variable":"Medal"}
+        title = f"Top {attr_dict[chosen_attribute]}",
+        labels={"value":"Number medals"}
     )
     fig.update_layout(barmode='group', xaxis_tickangle=45)
+    fig.layout.xaxis.title.text = ""
 
     return fig
 
@@ -567,7 +562,10 @@ def update_graph(athlete_attribute, athlete_gender):
     if athlete_gender == "Both":
         fig = px.histogram(df_orig, x=athlete_attribute)
     else:
-        fig = px.histogram(df_orig[df_orig["Sex"]==athlete_gender], x=athlete_attribute)
+        fig = px.histogram(
+            df_orig[df_orig["Sex"]==athlete_gender], 
+            x=athlete_attribute
+        )
     
     # Update axis texts
     fig.layout.yaxis.title.text = "Number of athletes"
@@ -595,7 +593,7 @@ def filter_df(sport):
     # Data for chosen sport
     else:
         df_sport = athlete_regions[athlete_regions['Sport']==sport]
-        df_sport = af.count_medals(df_sport, "NOC", "Year")
+        df_sport = af.count_medals_n(df_sport, "NOC", "Year")
         df_sport = df_sport.reset_index()
         dff = df_sport.merge(noc_iso, on="NOC", how="left")
         dff = dff.sort_values(by=["Year", "NOC"])
@@ -632,8 +630,8 @@ def update_graph(json_df, chosen_sport, medal):
     dff_sort = dff.sort_values(medal, ascending=False)
     dff_sort = dff_sort.head(10)
     fig2 = px.bar(
-        dff_sort, x=dff_sort["Country"], 
-        y=medal, color="Year", title=f"Hightlights in {chosen_sport}: top ten {medal} medals",
+        dff_sort, x=dff_sort["Country"], y=medal, color="Year", 
+        title=f"Hightlights in {chosen_sport}: top ten {medal} medals",
         labels={"value":"Number of medals", "variable":"Country"}
     )
 
@@ -649,7 +647,7 @@ def update_graph(json_df, chosen_sport, medal):
 )
 def update_graph(chosen_region, chosen_attribute):
 
-    # Update dataframe after chosen region
+    # Update dataframe to chosen region
     if chosen_region == "All regions":
         df_top = af.count_medals_n(athlete_regions, chosen_attribute)
     else:
@@ -694,7 +692,9 @@ def update_graph(chosen_region, athlete_attribute, athlete_gender):
     if athlete_gender == "Both":
         fig = px.histogram(athlete_region, x=athlete_attribute)
     else:
-        fig = px.histogram(athlete_region[athlete_region["Sex"]==athlete_gender], x=athlete_attribute)
+        fig = px.histogram(
+            athlete_region[athlete_region["Sex"]==athlete_gender], 
+            x=athlete_attribute)
     
     # Update axis texts
     fig.layout.yaxis.title.text = "Number of athletes"
