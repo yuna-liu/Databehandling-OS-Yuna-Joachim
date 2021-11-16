@@ -26,7 +26,6 @@ import plotly_express as px
 import analyze_functions as af
 
 
-
 # Set overall settings
 app = dash.Dash(
     __name__, 
@@ -331,7 +330,7 @@ def render_page_content(pathname):
             dbc.Card([
                 dbc.CardBody([
                     html.H1(
-                        'Sport statistics for global countries',
+                        'Global sport statistics',
                         className='card-title text-dark mx-3')
                 ])
             ], className="mt-4"),
@@ -378,13 +377,11 @@ def render_page_content(pathname):
             ]),
             
             ## The second section
-            dbc.Card([
-                dbc.CardBody([
-                    html.H1(
-                        'Sport statistics for global countries over years',
-                        className='card-title text-dark mx-3'
-                    )
-                ])
+            dbc.CardBody([
+                html.H2(
+                    'Global sport statistics per country and years',
+                    className='card-title text-dark mx-3'
+                )
             ], className="mt-4"),
             dbc.Row([
                 dbc.Col([
@@ -398,7 +395,7 @@ def render_page_content(pathname):
             # the 3rd section
             dbc.Card([
                 dbc.CardBody(
-                    html.H1("Top (10) - statistics for global countries",
+                    html.H1("Global top (10) statistics",
                     className='card-title text-dark mx-3'
                     )
                 )
@@ -409,6 +406,15 @@ def render_page_content(pathname):
                 # 1st with dropdown menu
                 dbc.Col([
                     dbc.Card([
+                        html.H3('Choose a statistic', className = 'm-2'),
+                        dcc.Dropdown(
+                            id = 'attribute-dropdown-world',
+                            className = 'm-2',
+                            value = "Sport",
+                            options = attribute_options_dropdown
+                        ),
+                    ]),
+                    dbc.Card([
                         html.H3('Choose a region', className = 'm-2'),
                         dcc.Dropdown(
                             id = 'region-dropdown',
@@ -417,15 +423,6 @@ def render_page_content(pathname):
                             options = region_options_dropdown
                         ),
                     ]),
-                    dbc.Card([
-                        html.H3('Choose a statistic', className = 'm-2'),
-                        dcc.Dropdown(
-                            id = 'attribute-dropdown-world',
-                            className = 'm-2',
-                            value = "Sport",
-                            options = attribute_options_dropdown
-                        ),
-                    ])
                 ], lg='8', xl='2'),
                 # 2nd with figure
                 dbc.Col([
@@ -438,12 +435,10 @@ def render_page_content(pathname):
 
             # The 4th section: for age histograms 
             # and other histograms of atheletes
-            dbc.Card([
-                dbc.CardBody(
-                    html.H1("Sport statistics for athletes",
-                    className='text-primary-m-4'
-                ))
-            ]),
+            dbc.CardBody(
+                html.H2("Statistics for athletes per region",
+                className='text-primary-m-4'
+            )),
 
             # two columns
             dbc.Row([
@@ -675,8 +670,10 @@ def update_graph(json_df, sport, medal):
     # Update figure with top10 countries per sport
     fig2 = px.bar(
         top10_all, y="Country", x=medal,
-        title=f"top 10 countries by sum of {medal} medals"
+        title=f"Top 10 countries by sum of {medal} medals"
     )
+    fig2.layout.yaxis.title.text = ""
+    fig2.layout.xaxis.title.text = "Number of medals"
      
     return fig1, fig2
 
@@ -712,9 +709,10 @@ def update_graph(json_df, sport, medal):
  
     fig2 = px.bar(
         top10_all, y="Country", x=medal, color="Year",
-        title=f"Hightlights in {sport}: top ten {medal} medals",
-        labels={"value":"Number of medals", "variable":"Country"}
+        title=f"Hightlights in {sport}: top ten {medal} medals"
     )
+    fig2.layout.yaxis.title.text = ""
+    fig2.layout.xaxis.title.text = "Number of medals"
 
     return fig, fig2
 
@@ -745,7 +743,7 @@ def update_graph(chosen_region, chosen_attribute):
         title=f"{chosen_region}: top {attr_dict[chosen_attribute]}",
         labels={"value":"Number of medals"}
     )
-    fig.layout.yaxis.title.text = ""
+    fig.layout.xaxis.title.text = ""
     fig.update_layout(barmode='group', xaxis_tickangle=45)
 
     return fig
@@ -772,11 +770,15 @@ def update_graph(chosen_region, athlete_attribute, athlete_gender):
 
     # Update figure (according to chosen gender)
     if athlete_gender == "Both":
-        fig = px.histogram(athlete_region, x=athlete_attribute)
+        fig = px.histogram(
+            athlete_region, x=athlete_attribute,
+            title=f"{chosen_region}"
+        )
     else:
         fig = px.histogram(
             athlete_region[athlete_region["Sex"]==athlete_gender], 
-            x=athlete_attribute
+            x=athlete_attribute,
+            title=f"{chosen_region}"
         )
     
     # Update axis texts
