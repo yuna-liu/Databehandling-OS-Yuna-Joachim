@@ -199,12 +199,12 @@ app.layout = dbc.Container([
 
     # The 4th section: for age histograms 
     # and other histograms of atheletes
-    dbc.Card([
-        dbc.CardBody(html.H1("Sport statistics for athletes",
-            className='text-primary-m-4'
-        ))
-    ]),
-
+    dbc.CardBody(
+        html.H2(
+        "Athlete statistics",
+        className='text-primary-m-4'
+        )
+    ),
     # two columns
     dbc.Row([
         dbc.Col([
