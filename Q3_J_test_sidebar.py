@@ -201,7 +201,7 @@ def render_page_content(pathname):
                 #  1st col: with medal picker and with numbers to the right
                 dbc.Col([
                     dbc.Card([
-                        html.H3('Choose a medal:', className='m-2'),
+                        html.H4('Choose a medal:', className='m-2'),
                         dcc.RadioItems(
                             id='medal-picker-radio', 
                             className='m-2',
@@ -212,7 +212,7 @@ def render_page_content(pathname):
                     ]),
                     dbc.Card([
                         dbc.Row([
-                            html.H3(
+                            html.H4(
                                 "Number of medals shown",
                                 className='m-2'
                             ),
@@ -304,7 +304,7 @@ def render_page_content(pathname):
                 dbc.Col([
                     dbc.Card([
                     # 1st with dropdown menu
-                        html.H3('Choose a gender', className = 'm-2'),
+                        html.H4('Choose a gender', className = 'm-2'),
                         dcc.RadioItems(
                             id='gender-picker-radio', 
                             className='m-2',
@@ -313,7 +313,7 @@ def render_page_content(pathname):
                             labelStyle={'display': 'block'}
                         ),
 
-                        html.H3('Choose a statistic', className = 'm-2'),
+                        html.H4('Choose a statistic', className = 'm-2'),
                         dcc.RadioItems(
                             id='athlete-radio', 
                             className='m-2',
@@ -424,7 +424,7 @@ def render_page_content(pathname):
                 # 1st with dropdown menu
                 dbc.Col([
                     dbc.Card([
-                        html.H3('Choose a statistic', className = 'm-2'),
+                        html.H4('Choose a statistic', className = 'm-2'),
                         dcc.Dropdown(
                             id = 'attribute-dropdown-world',
                             className = 'm-2',
@@ -433,7 +433,7 @@ def render_page_content(pathname):
                         ),
                     ]),
                     dbc.Card([
-                        html.H3('Choose a region', className = 'm-2'),
+                        html.H4('Choose a region', className = 'm-2'),
                         dcc.Dropdown(
                             id = 'region-dropdown',
                             className = 'm-2',
@@ -463,7 +463,7 @@ def render_page_content(pathname):
                 dbc.Col([
                     dbc.Card([
                     # 1st with dropdown menu
-                        html.H3('Choose a gender', className = 'm-2'),
+                        html.H4('Choose a gender', className = 'm-2'),
                         dcc.RadioItems(
                             id='gender-picker-radio-world', 
                             className='m-2',
@@ -472,7 +472,7 @@ def render_page_content(pathname):
                             labelStyle={'display': 'block'}
                         ),
 
-                        html.H3('Choose a statistic', className = 'm-2'),
+                        html.H4('Choose a statistic', className = 'm-2'),
                         dcc.RadioItems(
                             id='athlete-radio-world', 
                             className='m-2',
