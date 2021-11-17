@@ -73,7 +73,8 @@ sidebar = html.Div(
         html.H2("Olympics-Project", className="display-5"),
         html.Hr(),
         html.P(
-            "Yuna Liu and Joachim Wiegert", className="lead"
+            "120 years of Olympic games. Dashboard by Yuna Liu and Joachim Wiegert", 
+            className="lead"
         ),
         dbc.Nav([
                 dbc.NavLink("Canada medals", href="/page-1", active="exact"),
@@ -256,14 +257,6 @@ def render_page_content(pathname):
                     ),
                 ]),
             ], className='mt-4'),
-
-            # Footer
-            html.Footer([
-                dbc.Col([
-                    html.H3("120 years of Olympic games", className="h6"),
-                    html.P("Dashboard by Yuna & Joachim")
-                ])
-            ], className="navbar fixed-bottom"),
         ]
 
     # Canada statistiscs
@@ -336,13 +329,6 @@ def render_page_content(pathname):
                     ),
                 ], lg='8', xl='9'),
             ], className='mt-4'),
-            # Footer
-            html.Footer([
-                dbc.Col([
-                    html.H3("120 years of Olympic games", className="h6"),
-                    html.P("Dashboard by Yuna & Joachim")
-                ])
-            ], className="navbar fixed-bottom"),
         ]
 
     # Global statistics
@@ -463,14 +449,6 @@ def render_page_content(pathname):
                 ],  lg={"size": "10", "offset": 0}, xl={"size": "10", "offset": 0})
             ], className='mt-4'),
         ]),
-            # Footer
-            html.Footer([
-                dbc.Col([
-                    html.H3("120 years of Olympic games", className="h6"),
-                    html.P("Dashboard by Yuna & Joachim")
-                ])
-            ], className="navbar fixed-bottom"),
-
             # stores an intermediate value on the clients browser for sharing between callbacks
             dcc.Store(id="filtered-df")
         ]
@@ -732,10 +710,13 @@ def update_graph(chosen_region, athlete_attribute, sport, medal, total_athletes)
     # medal
     if total_athletes == "Yes":
         df_athlete = df_sport.copy()
-    elif medal!="Total":
-        df_athlete = df_sport[df_sport["Medal"]==medal]
+    elif medal != "Total":
+        df_athlete = df_sport[df_sport["Medal"] == medal]
     else:
-        df_athlete = df_sport[(df_sport["Medal"]=="Gold") | (df_sport["Medal"]=="Silver") | (df_sport["Medal"]=="Bronze")] 
+        df_athlete = df_sport[
+            (df_sport["Medal"]=="Gold") | 
+            (df_sport["Medal"]=="Silver") | 
+            (df_sport["Medal"]=="Bronze")] 
 
     df_athlete = df_athlete[df_athlete[athlete_attribute].notna()]
 

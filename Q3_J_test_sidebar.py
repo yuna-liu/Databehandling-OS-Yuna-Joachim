@@ -27,9 +27,6 @@ import analyze_functions as af
 
 
 # Set overall settings
-# Suppress callback exceptions to reduce unecessary missing-callback-errors
-# - advice from error and from
-# https://stackoverflow.com/questions/59568510/dash-suppress-callback-exceptions-not-working
 app = dash.Dash(
     __name__, 
     external_stylesheets = [dbc.themes.MATERIA],
@@ -40,6 +37,12 @@ app = dash.Dash(
         )
     ], suppress_callback_exceptions=True
 )
+# suppress_callback_exceptions=True is used to solve ID not found in layout problem.
+# It is caused by we have three layouts
+# The solution is [Reference][link]:
+# [link]: https://stackoverflow.com/questions/59568510/dash-suppress-callback-exceptions-not-working#:~:text=If%20you%20are%20looking%20for%20where%20to%20put,declaration%20itself%2C%20like%3A%20app%20%3D%20dash.Dash%20%28...%2C%20suppress_callback_exceptions%3DTrue%29.
+
+
 
 # needed for Heroku to connect to
 server = app.server
@@ -75,7 +78,7 @@ sidebar = html.Div(
         dbc.Nav([
                 dbc.NavLink("Canada medals", href="/page-1", active="exact"),
                 dbc.NavLink("Canada statistics", href="/page-2", active="exact"),
-                dbc.NavLink("Global statistics", href="/page-3", active="exact"),
+                dbc.NavLink("Sport statistics", href="/page-3", active="exact"),
         ], vertical=True, pills=True),
     ],
     style=SIDEBAR_STYLE,
@@ -151,11 +154,6 @@ df_medal = af.count_medals_n(df_orig, "Year")
 
 # Settings for international data
 # Set initial settings
-# Data for all sports
-df_int = af.count_medals_n(athlete_regions, "NOC", "Year")
-df_int = df_int.reset_index()
-df_iso = df_int.merge(noc_iso, on="NOC", how="left")
-df_iso = df_iso.sort_values(by=["Year", "NOC"])
 
 # Sport dropdown
 sport_list = athlete_regions['Sport'].unique().tolist()
@@ -174,6 +172,12 @@ region_list.sort()
 region_options_dropdown = [
     {'label':country, 'value': country} 
     for country in region_list
+]
+
+all_athletes_options = ["Yes", "No"]
+all_athletes_options_radio = [
+    {'label':choice, 'value': choice} 
+    for choice in all_athletes_options
 ]
 
 
@@ -252,13 +256,14 @@ def render_page_content(pathname):
                     ),
                 ]),
             ], className='mt-4'),
-            # Footer title
+
+            # Footer
             html.Footer([
                 dbc.Col([
                     html.H3("120 years of Olympic games", className="h6"),
                     html.P("Dashboard by Yuna & Joachim")
                 ])
-            ], className="navbar fixed-bottom")
+            ], className="navbar fixed-bottom"),
         ]
 
     # Canada statistiscs
@@ -272,7 +277,7 @@ def render_page_content(pathname):
                 ))
             ], className='mt-3'),
 
-            # 2 Rows, 1 with menu, 1 with figure
+            # 2 Rows, 1 with text & menu, 1 with figure
             dbc.Row([
                 dbc.Col([
                     html.H3('Choose a statistic:', className = 'm-2'),
@@ -303,7 +308,7 @@ def render_page_content(pathname):
             dbc.Row([
                 dbc.Col([
                     dbc.Card([
-                    # 1st with dropdown menu
+                    # 1st with radio menu
                         html.H4('Choose a gender', className = 'm-2'),
                         dcc.RadioItems(
                             id='gender-picker-radio', 
@@ -331,14 +336,13 @@ def render_page_content(pathname):
                     ),
                 ], lg='8', xl='9'),
             ], className='mt-4'),
-
-            # Footer title
+            # Footer
             html.Footer([
                 dbc.Col([
                     html.H3("120 years of Olympic games", className="h6"),
                     html.P("Dashboard by Yuna & Joachim")
                 ])
-            ], className="navbar fixed-bottom")
+            ], className="navbar fixed-bottom"),
         ]
 
     # Global statistics
@@ -347,9 +351,8 @@ def render_page_content(pathname):
              # the first section
             dbc.Card([
                 dbc.CardBody([
-                    html.H1(
-                        'Global sport statistics',
-                        className='card-title text-dark mx-3')
+                    html.H1('Global sport statistics',
+                            className='card-title text-dark mx-3')
                 ])
             ], className="mt-4"),
 
@@ -412,26 +415,15 @@ def render_page_content(pathname):
     
             # the 3rd section
             dbc.Card([
-                dbc.CardBody(
-                    html.H1("Global top (10) statistics",
+                dbc.CardBody(html.H1("Athlete statistics",
                     className='card-title text-dark mx-3'
-                    )
-                )
+                ))
             ], className='mt-4'),
 
             # 2 columns
             dbc.Row([
                 # 1st with dropdown menu
                 dbc.Col([
-                    dbc.Card([
-                        html.H4('Choose a statistic', className = 'm-2'),
-                        dcc.Dropdown(
-                            id = 'attribute-dropdown-world',
-                            className = 'm-2',
-                            value = "Sport",
-                            options = attribute_options_dropdown
-                        ),
-                    ]),
                     dbc.Card([
                         html.H4('Choose a region', className = 'm-2'),
                         dcc.Dropdown(
@@ -441,37 +433,7 @@ def render_page_content(pathname):
                             options = region_options_dropdown
                         ),
                     ]),
-                ], lg='8', xl='2'),
-                # 2nd with figure
-                dbc.Col([
-                    dcc.Graph(
-                        id='top10-graph-world',
-                        className=''
-                    ),
-                ])
-            ], className='mt-4'),
-
-            # The 4th section: for age histograms 
-            # and other histograms of atheletes
-            dbc.CardBody(
-                html.H2("Statistics for athletes per region",
-                className='text-primary-m-4'
-            )),
-
-            # two columns
-            dbc.Row([
-                dbc.Col([
                     dbc.Card([
-                    # 1st with dropdown menu
-                        html.H4('Choose a gender', className = 'm-2'),
-                        dcc.RadioItems(
-                            id='gender-picker-radio-world', 
-                            className='m-2',
-                            value="Both",
-                            options=gender_options,
-                            labelStyle={'display': 'block'}
-                        ),
-
                         html.H4('Choose a statistic', className = 'm-2'),
                         dcc.RadioItems(
                             id='athlete-radio-world', 
@@ -480,28 +442,39 @@ def render_page_content(pathname):
                             options=athlete_options,
                             labelStyle={'display': 'block'}
                         ),
-                    ], className='mt-1'),
-                ], lg='8', xl='3'),
+                    ]),
+                    dbc.Card([
+                        html.H4('Choose all athletes', className = 'm-2'),
+                        dcc.RadioItems(
+                            id='total-athletes-radio', 
+                            className='m-2',
+                            value="No",
+                            options=all_athletes_options_radio,
+                            labelStyle={'display': 'block'}
+                        ),
+                    ]),
+                ], lg='6', xl='2'),
                 # 2nd with figure
                 dbc.Col([
                     dcc.Graph(
-                        id='athlete-graph-world',
+                        id='athlete-distribution-graph',
                         className=''
                     ),
-                ])
+                ],  lg={"size": "10", "offset": 0}, xl={"size": "10", "offset": 0})
             ], className='mt-4'),
         ]),
-        # Footer title
-        html.Footer([
-            dbc.Col([
-                html.H3("120 years of Olympic games", className="h6"),
-                html.P("Dashboard by Yuna & Joachim")
-            ])
-        ], className="navbar fixed-bottom"),
+            ## Footer
+            #html.Footer([
+            #    dbc.Col([
+            #        html.H3("120 years of Olympic games", className="h6"),
+            #        html.P("Dashboard by Yuna & Joachim")
+            #    ])
+            #], className="navbar fixed-bottom"),
 
-        # stores an intermediate value on the clients browser for sharing between callbacks
-        dcc.Store(id="filtered-df")
-    ]
+            # stores an intermediate value on the clients browser for sharing between callbacks
+            dcc.Store(id="filtered-df")
+        ]
+
 
 
 
@@ -547,11 +520,10 @@ def update_graph(medal,time_index):
     number_medals = [dff[medal].sum() for medal in medal_list]
     
     # Update figure
-    # title=f"The number of {medal} medals from {time_index[0]} to {time_index[1]}",
     fig = px.bar(
-        dff, x="Year", y=medal, color="Season",
-        labels={"value":"Number medals", "variable":"Medal"}
+        dff, x="Year", y=medal, color="Season"
     )
+    fig.update_layout(yaxis_title = "Number of medals")
 
     for data in fig.data:
         data["width"]= 0.5
@@ -583,11 +555,14 @@ def update_graph(chosen_attribute):
     # Update figure
     fig = px.bar(
         df_top, x=chosen_attribute, y=medal_list,
-        title = f"Top {attr_dict[chosen_attribute]}",
-        labels={"value":"Number medals"}
+        title = f"Top {attr_dict[chosen_attribute]}"
     )
-    fig.update_layout(barmode='group', xaxis_tickangle=45)
-    fig.layout.xaxis.title.text = ""
+    fig.update_layout(
+        barmode='group', 
+        xaxis_tickangle=45,
+        xaxis_title = "",
+        yaxis_title = "Number medals"
+    )
 
     return fig
 
@@ -614,8 +589,10 @@ def update_graph(athlete_attribute, athlete_gender):
         )
     
     # Update axis texts
-    fig.layout.yaxis.title.text = "Number of athletes"
-    fig.layout.xaxis.title.text = unit_dict[athlete_attribute]
+    fig.update_layout(
+        yaxis_title = "Number of athletes",
+        xaxis_title = unit_dict[athlete_attribute]
+    )
 
     return fig
 
@@ -667,7 +644,7 @@ def update_graph(json_df, sport, medal):
         color=medal,
         scope=None,
         hover_name="Country",
-        title = f"Geographic map with sum of {medal} medals in {sport} games", 
+        title = f"Geographic map: sum of {sport} {medal} medals", 
         range_color=[0,dff[medal].quantile(0.95)],
         color_continuous_scale=px.colors.sequential.Plasma
     )
@@ -681,7 +658,7 @@ def update_graph(json_df, sport, medal):
     # Update figure with top10 countries per sport
     fig2 = px.bar(
         top10_all, y="Country", x=medal,
-        title=f"Top 10 countries by sum of {medal} medals"
+        title=f"Top 10 countries: sum of {sport} {medal} medals"
     )
     fig2.layout.yaxis.title.text = ""
     fig2.layout.xaxis.title.text = "Number of medals"
@@ -729,73 +706,52 @@ def update_graph(json_df, sport, medal):
 
 
 # -World-3
-# Figure showing top10-statistics for global countries
+# Figure athlete distribution for this chosen sport over age etc.
 @app.callback(
-    Output("top10-graph-world", "figure"),
-    Input("region-dropdown", "value"),
-    Input("attribute-dropdown-world", "value"),
-)
-def update_graph(chosen_region, chosen_attribute):
-
-    # Update dataframe to chosen region
-    if chosen_region == "All regions":
-        df_top = af.count_medals_n(athlete_regions, chosen_attribute)
-    else:
-        athlete_region = athlete_regions[athlete_regions['region']==chosen_region]
-        df_top = af.count_medals_n(athlete_region, chosen_attribute)
-
-    # Sort by attribute and extract top 10
-    df_top = df_top.sort_values("Total", ascending=False)
-    df_top = df_top.head(10)
-
-    # Update figure
-    fig = px.bar(
-        df_top, x=chosen_attribute, y=medal_list, 
-        title=f"{chosen_region}: top {attr_dict[chosen_attribute]}",
-        labels={"value":"Number of medals"}
-    )
-    fig.layout.xaxis.title.text = ""
-    fig.update_layout(barmode='group', xaxis_tickangle=45)
-
-    return fig
-
-
-# -World-4
-# Histograms with athletes statistics in each country
-@app.callback(
-    Output("athlete-graph-world", "figure"),
+    Output("athlete-distribution-graph", "figure"),
     Input("region-dropdown", "value"),
     Input("athlete-radio-world", "value"),
-    Input("gender-picker-radio-world", "value")
+    Input("sport-dropdown-world", "value"),
+    Input("medal-radio-world", "value"),
+    Input("total-athletes-radio", "value")
 )
-def update_graph(chosen_region, athlete_attribute, athlete_gender):
-    """
-    Figure with statistics for athletes
-    """
-
-    # Update dataframe after chosen region
-    if chosen_region == "All regions":
-        athlete_region = athlete_regions.copy()
-    else:
-        athlete_region = athlete_regions[athlete_regions['region']==chosen_region]
-
-    # Update figure (according to chosen gender)
-    if athlete_gender == "Both":
-        fig = px.histogram(
-            athlete_region, x=athlete_attribute,
-            title=f"{chosen_region}"
-        )
-    else:
-        fig = px.histogram(
-            athlete_region[athlete_region["Sex"]==athlete_gender], 
-            x=athlete_attribute,
-            title=f"{chosen_region}"
-        )
+def update_graph(chosen_region, athlete_attribute, sport, medal, total_athletes):
     
-    # Update axis texts
-    fig.layout.yaxis.title.text = "Number of athletes"
-    fig.layout.xaxis.title.text = unit_dict[athlete_attribute]
+    
+    # Update dataframe after chosen region
+    if chosen_region == "All regions" and sport=="All Sports":
+        df_sport = athlete_regions.copy()
+    elif chosen_region == "All regions" and sport!="All Sports":
+        df_sport = athlete_regions[athlete_regions["Sport"] == sport]
+    elif chosen_region != "All regions" and sport=="All Sports":
+        df_sport = athlete_regions[athlete_regions["region"] == chosen_region]
+    else:
+        df_sport = athlete_regions[athlete_regions["region"] ==chosen_region] 
+        df_sport = df_sport[df_sport["Sport"] == sport]
+    
+    # medal
+    if total_athletes == "Yes":
+        df_athlete = df_sport.copy()
+    elif medal != "Total":
+        df_athlete = df_sport[df_sport["Medal"] == medal]
+    else:
+        df_athlete = df_sport[
+            (df_sport["Medal"]=="Gold") | 
+            (df_sport["Medal"]=="Silver") | 
+            (df_sport["Medal"]=="Bronze")] 
 
+    df_athlete = df_athlete[df_athlete[athlete_attribute].notna()]
+
+    # plot:
+    athlete_counts = df_athlete[athlete_attribute].value_counts()
+    fig = px.bar(athlete_counts, title=f"{athlete_attribute} of {medal} medals winners and other athletes({total_athletes})")
+    fig.update_layout(
+        xaxis_title = unit_dict[athlete_attribute],
+        yaxis_title = "Frequency",
+        title_x = 0.5, 
+        #showlegend = False
+    )
+    
     return fig
 
 
