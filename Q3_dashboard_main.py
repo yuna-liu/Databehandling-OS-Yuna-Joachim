@@ -525,9 +525,9 @@ def update_graph(medal,time_index):
     # Update figure
     # title=f"The number of {medal} medals from {time_index[0]} to {time_index[1]}",
     fig = px.bar(
-        dff, x="Year", y=medal, color="Season",
-        labels={"value":"Number medals", "variable":"Medal"}
+        dff, x="Year", y=medal, color="Season"
     )
+    fig.update_layout(yaxis_title = "Number of medals")
 
     for data in fig.data:
         data["width"]= 0.5
@@ -562,8 +562,11 @@ def update_graph(chosen_attribute):
         title = f"Top {attr_dict[chosen_attribute]}",
         labels={"value":"Number medals"}
     )
-    fig.update_layout(barmode='group', xaxis_tickangle=45)
-    fig.layout.xaxis.title.text = ""
+    fig.update_layout(
+        barmode='group', 
+        xaxis_tickangle=45,
+        xaxis_title = ""
+    )
 
     return fig
 
@@ -590,8 +593,10 @@ def update_graph(athlete_attribute, athlete_gender):
         )
     
     # Update axis texts
-    fig.layout.yaxis.title.text = "Number of athletes"
-    fig.layout.xaxis.title.text = unit_dict[athlete_attribute]
+    fig.update_layout(
+        yaxis_title = "Number of athletes",
+        xaxis_title = unit_dict[athlete_attribute]
+    )
 
     return fig
 
