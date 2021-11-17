@@ -22,8 +22,6 @@ import dash_bootstrap_components as dbc
 from dash import Input, Output, dcc, html
 
 import plotly_express as px
-import seaborn as sns
-from matplotlib import pyplot as plt
 
 import analyze_functions as af
 
@@ -36,9 +34,8 @@ app = dash.Dash(
         dict(
             name="viewport", 
             content="width=device-width, initial-scale=1.0"
-           
         )
-    ],  suppress_callback_exceptions=True
+    ], suppress_callback_exceptions=True
 )
 # suppress_callback_exceptions=True is used to solve ID not found in layout problem.
 # It is caused by we have three layouts
@@ -523,7 +520,6 @@ def update_graph(medal,time_index):
     number_medals = [dff[medal].sum() for medal in medal_list]
     
     # Update figure
-    # title=f"The number of {medal} medals from {time_index[0]} to {time_index[1]}",
     fig = px.bar(
         dff, x="Year", y=medal, color="Season"
     )
@@ -559,13 +555,13 @@ def update_graph(chosen_attribute):
     # Update figure
     fig = px.bar(
         df_top, x=chosen_attribute, y=medal_list,
-        title = f"Top {attr_dict[chosen_attribute]}",
-        labels={"value":"Number medals"}
+        title = f"Top {attr_dict[chosen_attribute]}"
     )
     fig.update_layout(
         barmode='group', 
         xaxis_tickangle=45,
-        xaxis_title = ""
+        xaxis_title = "",
+        yaxis_title = "Number medals"
     )
 
     return fig
