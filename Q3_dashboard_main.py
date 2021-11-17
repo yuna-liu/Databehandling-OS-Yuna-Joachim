@@ -22,8 +22,6 @@ import dash_bootstrap_components as dbc
 from dash import Input, Output, dcc, html
 
 import plotly_express as px
-import seaborn as sns
-from matplotlib import pyplot as plt
 
 import analyze_functions as af
 
@@ -36,9 +34,8 @@ app = dash.Dash(
         dict(
             name="viewport", 
             content="width=device-width, initial-scale=1.0"
-           
         )
-    ],  suppress_callback_exceptions=True
+    ], suppress_callback_exceptions=True
 )
 # suppress_callback_exceptions=True is used to solve ID not found in layout problem.
 # It is caused by we have three layouts
@@ -76,7 +73,8 @@ sidebar = html.Div(
         html.H2("Olympics-Project", className="display-5"),
         html.Hr(),
         html.P(
-            "Yuna Liu and Joachim Wiegert", className="lead"
+            "120 years of Olympic games. Dashboard by Yuna Liu and Joachim Wiegert", 
+            className="lead"
         ),
         dbc.Nav([
                 dbc.NavLink("Canada medals", href="/page-1", active="exact"),
@@ -259,14 +257,6 @@ def render_page_content(pathname):
                     ),
                 ]),
             ], className='mt-4'),
-
-            # Footer
-            html.Footer([
-                dbc.Col([
-                    html.H3("120 years of Olympic games", className="h6"),
-                    html.P("Dashboard by Yuna & Joachim")
-                ])
-            ], className="navbar fixed-bottom"),
         ]
 
     # Canada statistiscs
@@ -339,13 +329,6 @@ def render_page_content(pathname):
                     ),
                 ], lg='8', xl='9'),
             ], className='mt-4'),
-            # Footer
-            html.Footer([
-                dbc.Col([
-                    html.H3("120 years of Olympic games", className="h6"),
-                    html.P("Dashboard by Yuna & Joachim")
-                ])
-            ], className="navbar fixed-bottom"),
         ]
 
     # Global statistics
@@ -466,14 +449,6 @@ def render_page_content(pathname):
                 ],  lg={"size": "10", "offset": 0}, xl={"size": "10", "offset": 0})
             ], className='mt-4'),
         ]),
-            # Footer
-            html.Footer([
-                dbc.Col([
-                    html.H3("120 years of Olympic games", className="h6"),
-                    html.P("Dashboard by Yuna & Joachim")
-                ])
-            ], className="navbar fixed-bottom"),
-
             # stores an intermediate value on the clients browser for sharing between callbacks
             dcc.Store(id="filtered-df")
         ]
@@ -523,11 +498,10 @@ def update_graph(medal,time_index):
     number_medals = [dff[medal].sum() for medal in medal_list]
     
     # Update figure
-    # title=f"The number of {medal} medals from {time_index[0]} to {time_index[1]}",
     fig = px.bar(
-        dff, x="Year", y=medal, color="Season",
-        labels={"value":"Number medals", "variable":"Medal"}
+        dff, x="Year", y=medal, color="Season"
     )
+    fig.update_layout(yaxis_title = "Number of medals")
 
     for data in fig.data:
         data["width"]= 0.5
@@ -559,11 +533,14 @@ def update_graph(chosen_attribute):
     # Update figure
     fig = px.bar(
         df_top, x=chosen_attribute, y=medal_list,
-        title = f"Top {attr_dict[chosen_attribute]}",
-        labels={"value":"Number medals"}
+        title = f"Top {attr_dict[chosen_attribute]}"
     )
-    fig.update_layout(barmode='group', xaxis_tickangle=45)
-    fig.layout.xaxis.title.text = ""
+    fig.update_layout(
+        barmode='group', 
+        xaxis_tickangle=45,
+        xaxis_title = "",
+        yaxis_title = "Number medals"
+    )
 
     return fig
 
@@ -590,8 +567,10 @@ def update_graph(athlete_attribute, athlete_gender):
         )
     
     # Update axis texts
-    fig.layout.yaxis.title.text = "Number of athletes"
-    fig.layout.xaxis.title.text = unit_dict[athlete_attribute]
+    fig.update_layout(
+        yaxis_title = "Number of athletes",
+        xaxis_title = unit_dict[athlete_attribute]
+    )
 
     return fig
 
@@ -731,10 +710,13 @@ def update_graph(chosen_region, athlete_attribute, sport, medal, total_athletes)
     # medal
     if total_athletes == "Yes":
         df_athlete = df_sport.copy()
-    elif medal!="Total":
-        df_athlete = df_sport[df_sport["Medal"]==medal]
+    elif medal != "Total":
+        df_athlete = df_sport[df_sport["Medal"] == medal]
     else:
-        df_athlete = df_sport[(df_sport["Medal"]=="Gold") | (df_sport["Medal"]=="Silver") | (df_sport["Medal"]=="Bronze")] 
+        df_athlete = df_sport[
+            (df_sport["Medal"]=="Gold") | 
+            (df_sport["Medal"]=="Silver") | 
+            (df_sport["Medal"]=="Bronze")] 
 
     df_athlete = df_athlete[df_athlete[athlete_attribute].notna()]
 
