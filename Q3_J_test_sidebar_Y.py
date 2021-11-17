@@ -208,7 +208,7 @@ def render_page_content(pathname):
                 #  1st col: with medal picker and with numbers to the right
                 dbc.Col([
                     dbc.Card([
-                        html.H3('Choose a medal:', className='m-2'),
+                        html.H4('Choose a medal:', className='m-2'),
                         dcc.RadioItems(
                             id='medal-picker-radio', 
                             className='m-2',
@@ -219,7 +219,7 @@ def render_page_content(pathname):
                     ]),
                     dbc.Card([
                         dbc.Row([
-                            html.H3(
+                            html.H4(
                                 "Number of medals shown",
                                 className='m-2'
                             ),
@@ -258,7 +258,15 @@ def render_page_content(pathname):
                         marks = slider_marks
                     ),
                 ]),
-            ], className='mt-4')
+            ], className='mt-4'),
+
+            # Footer
+            html.Footer([
+                dbc.Col([
+                    html.H3("120 years of Olympic games", className="h6"),
+                    html.P("Dashboard by Yuna & Joachim")
+                ])
+            ], className="navbar fixed-bottom"),
         ]
 
     # Canada statistiscs
@@ -272,7 +280,7 @@ def render_page_content(pathname):
                 ))
             ], className='mt-3'),
 
-            # 2 Rows, 1 with menu, 1 with figure
+            # 2 Rows, 1 with text & menu, 1 with figure
             dbc.Row([
                 dbc.Col([
                     html.H3('Choose a statistic:', className = 'm-2'),
@@ -303,8 +311,8 @@ def render_page_content(pathname):
             dbc.Row([
                 dbc.Col([
                     dbc.Card([
-                    # 1st with dropdown menu
-                        html.H3('Choose a gender', className = 'm-2'),
+                    # 1st with radio menu
+                        html.H4('Choose a gender', className = 'm-2'),
                         dcc.RadioItems(
                             id='gender-picker-radio', 
                             className='m-2',
@@ -313,7 +321,7 @@ def render_page_content(pathname):
                             labelStyle={'display': 'block'}
                         ),
 
-                        html.H3('Choose a statistic', className = 'm-2'),
+                        html.H4('Choose a statistic', className = 'm-2'),
                         dcc.RadioItems(
                             id='athlete-radio', 
                             className='m-2',
@@ -331,6 +339,13 @@ def render_page_content(pathname):
                     ),
                 ], lg='8', xl='9'),
             ], className='mt-4'),
+            # Footer
+            html.Footer([
+                dbc.Col([
+                    html.H3("120 years of Olympic games", className="h6"),
+                    html.P("Dashboard by Yuna & Joachim")
+                ])
+            ], className="navbar fixed-bottom"),
         ]
 
     # Global statistics
@@ -413,7 +428,7 @@ def render_page_content(pathname):
                 # 1st with dropdown menu
                 dbc.Col([
                     dbc.Card([
-                        html.H3('Choose a region', className = 'm-2'),
+                        html.H4('Choose a region', className = 'm-2'),
                         dcc.Dropdown(
                             id = 'region-dropdown',
                             className = 'm-2',
@@ -422,7 +437,7 @@ def render_page_content(pathname):
                         ),
                     ]),
                     dbc.Card([
-                        html.H3('Choose a statistic', className = 'm-2'),
+                        html.H4('Choose a statistic', className = 'm-2'),
                         dcc.RadioItems(
                             id='athlete-radio-world', 
                             className='m-2',
@@ -432,7 +447,7 @@ def render_page_content(pathname):
                         ),
                     ]),
                     dbc.Card([
-                        html.H3('Choose all athletes', className = 'm-2'),
+                        html.H4('Choose all athletes', className = 'm-2'),
                         dcc.RadioItems(
                             id='total-athletes-radio', 
                             className='m-2',
@@ -450,14 +465,14 @@ def render_page_content(pathname):
                     ),
                 ],  lg={"size": "10", "offset": 0}, xl={"size": "10", "offset": 0})
             ], className='mt-4'),
-        
-
-            # TODO: add to canada parts also?
+        ]),
+            # Footer
             html.Footer([
-                html.H3("120 years of Olympic games", className="h6"),
-                html.P("Dashboard av Yuna och Joachim")],
-                className="navbar fixed-bottom")
-            ]),
+                dbc.Col([
+                    html.H3("120 years of Olympic games", className="h6"),
+                    html.P("Dashboard by Yuna & Joachim")
+                ])
+            ], className="navbar fixed-bottom"),
 
             # stores an intermediate value on the clients browser for sharing between callbacks
             dcc.Store(id="filtered-df")

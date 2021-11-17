@@ -251,7 +251,14 @@ def render_page_content(pathname):
                         marks = slider_marks
                     ),
                 ]),
-            ], className='mt-4')
+            ], className='mt-4'),
+            # Footer title
+            html.Footer([
+                dbc.Col([
+                    html.H3("120 years of Olympic games", className="h6"),
+                    html.P("Dashboard by Yuna & Joachim")
+                ])
+            ], className="navbar fixed-bottom")
         ]
 
     # Canada statistiscs
@@ -324,6 +331,14 @@ def render_page_content(pathname):
                     ),
                 ], lg='8', xl='9'),
             ], className='mt-4'),
+
+            # Footer title
+            html.Footer([
+                dbc.Col([
+                    html.H3("120 years of Olympic games", className="h6"),
+                    html.P("Dashboard by Yuna & Joachim")
+                ])
+            ], className="navbar fixed-bottom")
         ]
 
     # Global statistics
@@ -475,13 +490,14 @@ def render_page_content(pathname):
                     ),
                 ])
             ], className='mt-4'),
-
-            # TODO: add to canada parts also?
-            html.Footer([
+        ]),
+        # Footer title
+        html.Footer([
+            dbc.Col([
                 html.H3("120 years of Olympic games", className="h6"),
-                html.P("Dashboard av Yuna och Joachim")],
-                className="navbar fixed-bottom")
-            ]),
+                html.P("Dashboard by Yuna & Joachim")
+            ])
+        ], className="navbar fixed-bottom"),
 
         # stores an intermediate value on the clients browser for sharing between callbacks
         dcc.Store(id="filtered-df")
