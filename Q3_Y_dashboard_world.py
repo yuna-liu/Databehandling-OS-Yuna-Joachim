@@ -6,8 +6,6 @@ from dash.dependencies import Output, Input
 import dash_bootstrap_components as dbc
 
 import plotly_express as px
-import seaborn as sns
-from matplotlib import pyplot as plt
 
 import analyze_functions as af
 
