@@ -27,6 +27,9 @@ import analyze_functions as af
 
 
 # Set overall settings
+# Suppress callback exceptions to reduce unecessary missing-callback-errors
+# - advice from error and from
+# https://stackoverflow.com/questions/59568510/dash-suppress-callback-exceptions-not-working
 app = dash.Dash(
     __name__, 
     external_stylesheets = [dbc.themes.MATERIA],
@@ -35,7 +38,7 @@ app = dash.Dash(
             name="viewport", 
             content="width=device-width, initial-scale=1.0"
         )
-    ]
+    ], suppress_callback_exceptions=True
 )
 
 # needed for Heroku to connect to
