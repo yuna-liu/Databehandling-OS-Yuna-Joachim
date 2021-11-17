@@ -7,7 +7,7 @@ Yuna: I add raw datasets in data folder, och a OOP(with name: load_data) to get 
 
 2021-11-08 - J: Created a pipenv here, uploaded my pipfile also.
 
-Dashboard-idéer:
+### Dashboard-idéer:
 
 - En tidsplot, med en slider för att välja år
 
@@ -17,7 +17,7 @@ Dashboard-idéer:
 
 TODO:
 
-Anteckningar till presentation:
+### Anteckningar inför presentation:
 
 - Visa dashboard, vad visar vi, ett par intressanta saker man kan se i det vi presenterar.
 
@@ -26,6 +26,28 @@ Anteckningar till presentation:
 - Hur har arbetet gått? Mycket distans, Joachim sjuk halva tiden, problem med två olika Python-versioner, följande problem med gir-merge, git bash blev räddningen!
 
 Kod och video ska lämnas in på fredag, 19/11
+
+### Anteckningar till presentationen
+
+Joachim tar Q1
+
+- Q1-frågorna
+
+- Någon extra statistik
+
+- Någon bit från koden
+
+Yuna tar Q2
+
+- Q2-frågorna
+
+- Någon extra statistik
+
+- Någon bit från koden
+
+
+
+
 
 
 
