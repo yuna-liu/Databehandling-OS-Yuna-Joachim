@@ -81,7 +81,7 @@ sidebar = html.Div(
         dbc.Nav([
                 dbc.NavLink("Canada medals", href="/page-1", active="exact"),
                 dbc.NavLink("Canada statistics", href="/page-2", active="exact"),
-                dbc.NavLink("Global statistics", href="/page-3", active="exact"),
+                dbc.NavLink("Sport statistics", href="/page-3", active="exact"),
         ], vertical=True, pills=True),
     ],
     style=SIDEBAR_STYLE,
@@ -635,7 +635,7 @@ def update_graph(json_df, sport, medal):
         color=medal,
         scope=None,
         hover_name="Country",
-        title = f"Geographic map with sum of {medal} medals in {sport} games", 
+        title = f"Geographic map: sum of {sport} {medal} medals", 
         range_color=[0,dff[medal].quantile(0.95)],
         color_continuous_scale=px.colors.sequential.Plasma
     )
@@ -649,7 +649,7 @@ def update_graph(json_df, sport, medal):
     # Update figure with top10 countries per sport
     fig2 = px.bar(
         top10_all, y="Country", x=medal,
-        title=f"Top 10 countries by sum of {medal} medals"
+        title=f"Top 10 countries: sum of {sport} {medal} medals"
     )
     fig2.layout.yaxis.title.text = ""
     fig2.layout.xaxis.title.text = "Number of medals"
@@ -732,7 +732,7 @@ def update_graph(chosen_region, athlete_attribute, sport, medal, total_athletes)
 
     # plot:
     athlete_counts = df_athlete[athlete_attribute].value_counts()
-    fig = px.bar(athlete_counts, title=f"{athlete_attribute} of {medal} medals winners or athletes({total_athletes})")
+    fig = px.bar(athlete_counts, title=f"{athlete_attribute} of {medal} medals winners and other athletes({total_athletes})")
     fig.update_layout(
         xaxis_title = unit_dict[athlete_attribute],
         yaxis_title = "Frequency",
