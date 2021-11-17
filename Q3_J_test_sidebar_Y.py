@@ -40,6 +40,12 @@ app = dash.Dash(
         )
     ],  suppress_callback_exceptions=True
 )
+# suppress_callback_exceptions=True is used to solve ID not found in layout problem.
+# It is caused by we have three layouts
+# The solution is [Reference][link]:
+# [link]: https://stackoverflow.com/questions/59568510/dash-suppress-callback-exceptions-not-working#:~:text=If%20you%20are%20looking%20for%20where%20to%20put,declaration%20itself%2C%20like%3A%20app%20%3D%20dash.Dash%20%28...%2C%20suppress_callback_exceptions%3DTrue%29.
+
+
 
 # needed for Heroku to connect to
 server = app.server
