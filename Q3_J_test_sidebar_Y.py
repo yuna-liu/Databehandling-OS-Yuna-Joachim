@@ -450,7 +450,7 @@ def render_page_content(pathname):
                     ),
                 ],  lg={"size": "10", "offset": 0}, xl={"size": "10", "offset": 0})
             ], className='mt-4'),
-
+        
 
             # TODO: add to canada parts also?
             html.Footer([
@@ -459,9 +459,9 @@ def render_page_content(pathname):
                 className="navbar fixed-bottom")
             ]),
 
-        # stores an intermediate value on the clients browser for sharing between callbacks
-        dcc.Store(id="filtered-df")
-    ]
+            # stores an intermediate value on the clients browser for sharing between callbacks
+            dcc.Store(id="filtered-df")
+        ]
 
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
