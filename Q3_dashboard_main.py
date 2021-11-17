@@ -478,14 +478,7 @@ def render_page_content(pathname):
             dcc.Store(id="filtered-df")
         ]
 
-    # If the user tries to reach a different page, return a 404 message
-    return dbc.Jumbotron(
-        [
-            html.H1("404: Not found", className="text-danger"),
-            html.Hr(),
-            html.P(f"The pathname {pathname} was not recognised..."),
-        ]
-    )
+
 
 
 # Callbacks and functions
