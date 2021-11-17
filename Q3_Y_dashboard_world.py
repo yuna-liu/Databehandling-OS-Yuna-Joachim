@@ -251,6 +251,8 @@ def filter_df(sport):
         df = af.count_medals_n(athlete_iso, "Country", "ISO", "Year", "Sport")
         df = df[df["Sport"]==sport]
 
+    df = df.sort_values(by=["Year", "ISO"])
+    
     return df.to_json()
 
 
