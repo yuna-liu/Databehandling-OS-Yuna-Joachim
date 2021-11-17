@@ -6,6 +6,8 @@ from dash.dependencies import Output, Input
 import dash_bootstrap_components as dbc
 
 import plotly_express as px
+import seaborn as sns
+from matplotlib import pyplot as plt
 
 import analyze_functions as af
 
@@ -81,6 +83,11 @@ athlete_options = [
     for attribute, name in athlete_dict.items()
 ]
 
+all_athletes_options = ["Yes", "No"]
+all_athletes_options_radio = [
+    {'label':choice, 'value': choice} 
+    for choice in all_athletes_options
+]
 
 stylesheets = [dbc.themes.MATERIA]
 # creates a Dash App
@@ -160,7 +167,7 @@ app.layout = dbc.Container([
     
     # the 3rd section
     dbc.Card([
-        dbc.CardBody(html.H1("Top (10) - statistics for global countries",
+        dbc.CardBody(html.H1("Athlete statistics",
             className='card-title text-dark mx-3'
         ))
     ], className='mt-4'),
@@ -180,46 +187,6 @@ app.layout = dbc.Container([
             ]),
             dbc.Card([
                 html.H3('Choose a statistic', className = 'm-2'),
-                dcc.Dropdown(
-                    id = 'attribute-dropdown',
-                    className = 'm-2',
-                    value = "Sport",
-                    options = attribute_options_dropdown
-                ),
-            ])
-        ], lg='8', xl='2'),
-        # 2nd with figure
-        dbc.Col([
-            dcc.Graph(
-                id='top10-graph',
-                className=''
-            ),
-        ])
-    ], className='mt-4'),
-
-    # The 4th section: for age histograms 
-    # and other histograms of atheletes
-    dbc.CardBody(
-        html.H2(
-        "Athlete statistics",
-        className='text-primary-m-4'
-        )
-    ),
-    # two columns
-    dbc.Row([
-        dbc.Col([
-            dbc.Card([
-            # 1st with dropdown menu
-                html.H3('Choose a gender', className = 'm-2'),
-                dcc.RadioItems(
-                    id='gender-picker-radio', 
-                    className='m-2',
-                    value="Both",
-                    options=gender_options,
-                    labelStyle={'display': 'block'}
-                ),
-
-                html.H3('Choose a statistic', className = 'm-2'),
                 dcc.RadioItems(
                     id='athlete-radio', 
                     className='m-2',
@@ -227,16 +194,27 @@ app.layout = dbc.Container([
                     options=athlete_options,
                     labelStyle={'display': 'block'}
                 ),
-            ], className='mt-1'),
-        ], lg='8', xl='3'),
+            ]),
+            dbc.Card([
+                html.H3('Choose all athletes', className = 'm-2'),
+                dcc.RadioItems(
+                    id='total-athletes-radio', 
+                    className='m-2',
+                    value="No",
+                    options=all_athletes_options_radio,
+                    labelStyle={'display': 'block'}
+                ),
+            ]),
+        ], lg='6', xl='2'),
         # 2nd with figure
         dbc.Col([
             dcc.Graph(
-                id='athlete-graph',
+                id='athlete-distribution-graph',
                 className=''
             ),
-        ])
+        ],  lg={"size": "10", "offset": 0}, xl={"size": "10", "offset": 0})
     ], className='mt-4'),
+
 
     html.Footer([
         html.H3("120 years of Olympic games", className="h6"),
@@ -251,7 +229,7 @@ app.layout = dbc.Container([
 
 
 
-
+# First section
 # when something changes in the input component, the code in function below will run and update the output component
 # the components are connected through their id
 @app.callback(
@@ -277,11 +255,11 @@ def filter_df(sport):
 
 
 @app.callback(
-    Output("sum-medals-map", "figure"),
-    Output("sum-medals-top10", "figure"),
-    Input("filtered-df", "data"),
+    [Output("sum-medals-map", "figure"),
+    Output("sum-medals-top10", "figure")],
+    [Input("filtered-df", "data"),
     Input("sport-dropdown", "value"),
-    Input("medal-radio", "value"),
+    Input("medal-radio", "value")],
 )
 
 def update_graph(json_df, sport, medal):
@@ -293,7 +271,7 @@ def update_graph(json_df, sport, medal):
                         color=medal,
                         scope=None,
                         hover_name="Country",
-                        title = f"Geographic map on sum of {medal} medals in {sport} games", 
+                        title = f"Geographic map: sum of {sport} {medal} medals", 
                         range_color=[0,dff[medal].quantile(0.95)],
                         color_continuous_scale=px.colors.sequential.Plasma)
     
@@ -308,14 +286,15 @@ def update_graph(json_df, sport, medal):
     return fig1, fig2
 
 
+# For second section
 # sort by country, year
 # World-map figure over years
 @app.callback(
-    Output("medals-graph-world", "figure"),
-    Output("highlights-graph-world", "figure"),
-    Input("filtered-df", "data"),
+    [Output("medals-graph-world", "figure"),
+    Output("highlights-graph-world", "figure")],
+    [Input("filtered-df", "data"),
     Input("sport-dropdown", "value"),
-    Input("medal-radio", "value")
+    Input("medal-radio", "value")]
 )
 def update_graph(json_df, sport, medal):
     dff = pd.read_json(json_df)
@@ -341,66 +320,52 @@ def update_graph(json_df, sport, medal):
     return fig1, fig2
 
 
-# Figure showing top10-statistics for global countries
+# For 3rd section
+# Figure athlete distribution for this chosen sport over age etc.
 @app.callback(
-    Output("top10-graph", "figure"),
-    Input("region-dropdown", "value"),
-    Input("attribute-dropdown", "value"),
-    Input("sport-dropdown", "value"),
-    Input("medal-radio", "value")
-)
-def update_graph(chosen_region, chosen_attribute, sport, medal):
-    # Update dataframe after chosen region
-    if chosen_region == "All regions":
-        df_top = af.count_medals_n(athlete_regions, chosen_attribute)
-    else:
-        athlete_region = athlete_regions[athlete_regions['region']==chosen_region]
-        df_top = af.count_medals_n(athlete_region, chosen_attribute)
-
-    # Sort by attribute and extract top 10
-    df_top = df_top.sort_values("Total", ascending=False)
-    df_top = df_top.head(10)
-
-    # Update figure
-    fig = px.bar(
-        df_top, x=chosen_attribute, y=medal_list, 
-        title=f"{chosen_region}: top {attr_dict[chosen_attribute]}",
-        labels={"value":"Number of medals", "variable":"Medal"}
-    )
-    fig.update_layout(barmode='group', xaxis_tickangle=45)
-
-    return fig
-
-
-# Histograms with athletes statistics in each country
-@app.callback(
-    Output("athlete-graph", "figure"),
+    Output("athlete-distribution-graph", "figure"),
     Input("region-dropdown", "value"),
     Input("athlete-radio", "value"),
-    Input("gender-picker-radio", "value")
+    Input("sport-dropdown", "value"),
+    Input("medal-radio", "value"),
+    Input("total-athletes-radio", "value")
 )
-def update_graph(chosen_region, athlete_attribute, athlete_gender):
-    """
-    Figure with statistics for athletes
-    """
-
-    # Update dataframe after chosen region
-    if chosen_region == "All regions":
-        athlete_region = athlete_regions.copy()
-    else:
-        athlete_region = athlete_regions[athlete_regions['region']==chosen_region]
-
-    # Update figure (according to chosen gender)
-    if athlete_gender == "Both":
-        fig = px.histogram(athlete_region, x=athlete_attribute)
-    else:
-        fig = px.histogram(athlete_region[athlete_region["Sex"]==athlete_gender], x=athlete_attribute)
+def update_graph(chosen_region, athlete_attribute, sport, medal, total_athletes):
     
-    # Update axis texts
-    fig.layout.yaxis.title.text = "Number of athletes"
-    fig.layout.xaxis.title.text = unit_dict[athlete_attribute]
+    
+    # Update dataframe after chosen region
+    if chosen_region == "All regions" and sport=="All Sports":
+        df_sport = athlete_regions.copy()
+    elif chosen_region == "All regions" and sport!="All Sports":
+        df_sport = athlete_regions[athlete_regions["Sport"] == sport]
+    elif chosen_region != "All regions" and sport=="All Sports":
+        df_sport = athlete_regions[athlete_regions["region"] == chosen_region]
+    else:
+        df_sport = athlete_regions[athlete_regions["region"] ==chosen_region] 
+        df_sport = df_sport[df_sport["Sport"] == sport]
+    
+    # medal
+    if total_athletes == "Yes":
+        df_athlete = df_sport.copy()
+    elif medal!="Total":
+        df_athlete = df_sport[df_sport["Medal"]==medal]
+    else:
+        df_athlete = df_sport[(df_sport["Medal"]=="Gold") | (df_sport["Medal"]=="Silver") | (df_sport["Medal"]=="Bronze")] 
 
+    df_athlete = df_athlete[df_athlete[athlete_attribute].notna()]
+
+    # plot:
+    athlete_counts = df_athlete[athlete_attribute].value_counts()
+    fig = px.bar(athlete_counts, title=f"{athlete_attribute} of {medal} medals winners or athletes({total_athletes})")
+    fig.update_layout(
+        xaxis_title = unit_dict[athlete_attribute],
+        yaxis_title = "Frequency",
+        title_x = 0.5, 
+        #showlegend = False
+    )
+    
     return fig
+
 
 
 if __name__ == '__main__':
