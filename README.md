@@ -45,7 +45,19 @@ Yuna tar Q2
 
 - Någon bit från koden
 
-
+### short explanations of the files:
+- Uppgifter 0 sovled we seperately in files: Q0_J.ipynb and Q0_Y.ipynb
+- Uppgifter 1 solved we in file: Q1_J.ipynb and Q1_Y_hash.ipynb
+- Uppgifter 2 solved we in file: Q2_Y.ipynb
+- Uppgifter 3 solved we in three dashboards:
+- Canada statistics dashboard solved in Q3_J_dashboard.py
+- Sport statistics dashboard solved in Q3_Y_dashboard_world.py
+- Sidebar dashboard solved we in Q3_dashboard_main.py
+- analyze_functions.py is a module with defined function count_medals for arbitrary attributes
+- get_iso.ipynb documented how we get the corresponding noc to iso code for each country
+- load_data.py is a module with defined class to look into data, and check missing data etc.
+- data folder included the original data and data we generated
+- Visualiseringar folder included collected all figures in uppgiter 1 and 2.
 
 
 
