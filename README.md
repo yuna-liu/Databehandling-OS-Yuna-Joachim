@@ -1,6 +1,10 @@
 
 # Databehandlingsprojekt: OS - Yuna & Joachim
 
+## Olympics-Project: 120 years of Olympic games. 
+
+## Dashboard by Yuna Liu and Joachim Wiegert
+
 ---
 ## Goal of this project
 
@@ -17,7 +21,6 @@ for 120 years Olympic Games from [Kaggle][kagglelink]
 ---
 
 ## Our final dashboard app
-This project is a coorperation between Yuna Liu, and Joachim Wiegert.
 
 The final **dashboard** App of this project could be found **[here][dashboardlink]** in Heroku:
 
@@ -52,7 +55,8 @@ The final **dashboard** App of this project could be found **[here][dashboardlin
 
 
 ---
-## Discussion board
+## Discussion white board
+This is a coorperation between Yuna Liu, and Joachim Wiegert.
 
 Joachim: Jag testar om pull och push fungerar. Syns detta online sen så fungerar det :)
 
