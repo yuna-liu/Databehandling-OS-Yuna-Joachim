@@ -20,9 +20,10 @@ for 120 years Olympic Games from [Kaggle][kagglelink]
 
 ---
 
-## Our final dashboard app
+## Our final deployed dashboard app
 
-The final **dashboard** App of this project could be found **[here][dashboardlink]** in Heroku:
+The final deployed **dashboard** App of this project could be found **[here][dashboardlink]** on Heroku:
+https://dashboard-yuna-joachim.herokuapp.com/
 
 [dashboardlink]: https://dashboard-yuna-joachim.herokuapp.com/
 
