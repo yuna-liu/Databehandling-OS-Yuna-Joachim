@@ -1,18 +1,58 @@
 
 # Databehandlingsprojekt: OS - Yuna & Joachim
 
-This [project][projectlink] is to make dashboard to visualize the historical data for 120 years Olympic Games from [Kaggle][link]
+---
+## Goal of this project
+
+The **goal** of this [project][projectlink] is to:
+- work in a group
+- use python to clean and filter the data
+- make dashboard to visualize the historical data 
+for 120 years Olympic Games from [Kaggle][kagglelink]
 
 [projectlink]: https://github.com/yuna-liu/Databehandling-OS-Yuna-Joachim/blob/main/Projekt_OS.pdf
 
-[link]: 
+[kagglelink]: https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results
 
-The final App could be found in [Heroku][link]:
+---
 
-[link]: https://dashboard-yuna-joachim.herokuapp.com/
+## Our final dashboard app
+This project is a coorperation between Yuna Liu, and Joachim Wiegert.
+
+The final **dashboard** App of this project could be found **[here][dashboardlink]** in Heroku:
+
+[dashboardlink]: https://dashboard-yuna-joachim.herokuapp.com/
+
+---
+
+## File structures:
+
+### A explosive data analysis over the whole dataset:
+- Uppgifter 0 sovled we seperately in files: Q0_J.ipynb and Q0_Y.ipynb
+
+### Data analysis of canada
+- Uppgifter 1 solved we in file: Q1_J.ipynb and Q1_Y_hash.ipynb
+
+### Sport statistics
+- Uppgifter 2 solved we in file: Q2_Y.ipynb
+
+### Files to create Dashboard
+- Canada statistics dashboard: Q3_J_dashboard.py
+- Sport statistics dashboard: Q3_Y_dashboard_world.py
+- Sidebar dashboard of both candada and sport statistics: Q3_dashboard_main.py
+
+### Functions/modules constructed for this project
+- analyze_functions.py, which is a module with defined function count_medals for arbitrary attributes
+- get_iso.ipynb, which documented how we get the corresponding noc to iso code for each country
+- load_data.py, which is a module with defined class to look into data, and check missing data etc.
+
+### Data and figures
+- data folder included the original data and data we generated
+- Visualiseringar folder included collected all figures in uppgiter 1 and 2.
 
 
 ---
+## Discussion board
 
 Joachim: Jag testar om pull och push fungerar. Syns detta online sen så fungerar det :)
 
@@ -58,19 +98,6 @@ Yuna tar Q2
 
 - Någon bit från koden
 
-### short explanations of the files:
-- Uppgifter 0 sovled we seperately in files: Q0_J.ipynb and Q0_Y.ipynb
-- Uppgifter 1 solved we in file: Q1_J.ipynb and Q1_Y_hash.ipynb
-- Uppgifter 2 solved we in file: Q2_Y.ipynb
-- Uppgifter 3 solved we in three dashboards:
-- Canada statistics dashboard solved in Q3_J_dashboard.py
-- Sport statistics dashboard solved in Q3_Y_dashboard_world.py
-- Sidebar dashboard solved we in Q3_dashboard_main.py
-- analyze_functions.py is a module with defined function count_medals for arbitrary attributes
-- get_iso.ipynb documented how we get the corresponding noc to iso code for each country
-- load_data.py is a module with defined class to look into data, and check missing data etc.
-- data folder included the original data and data we generated
-- Visualiseringar folder included collected all figures in uppgiter 1 and 2.
 
 
 
