@@ -1,6 +1,12 @@
 
 # Databehandlingsprojekt: OS - Yuna & Joachim
 
+This [project][projectlink] is to make dashboard to visualize the historical data for 120 years Olympic Games from [Kaggle][link]
+
+[projectlink]: https://github.com/yuna-liu/Databehandling-OS-Yuna-Joachim/blob/main/Projekt_OS.pdf
+
+[link]: 
+
 The final App could be found in [Heroku][link]:
 
 [link]: https://dashboard-yuna-joachim.herokuapp.com/
